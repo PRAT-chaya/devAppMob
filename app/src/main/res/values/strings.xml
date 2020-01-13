@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">TP4</string>
+    <string name="show_ad">Show ad</string>
+    <string name="add_ad">Add ad</string>
+    <string name="show_ads_list">Show ads list</string>
+    <string name="my_profile">My profile</string>
+    <string name="published">Published </string>
+    <string name="at">at</string>
+    <string name="contact">Contact</string>
+</resources>

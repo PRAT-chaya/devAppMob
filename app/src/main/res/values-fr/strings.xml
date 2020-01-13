@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="show_ad">Voir annonce</string>
+    <string name="add_ad">Déposer annonce</string>
+    <string name="show_ads_list">Lister annonces</string>
+    <string name="my_profile">Mon profil</string>
+    <string name="published">Publié le</string>
+    <string name="at">à</string>
+    <string name="contact">Contacter</string>
+</resources>
