@@ -80,7 +80,7 @@ public class AnnonceViewActivity extends AppCompatActivity {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(Call call, Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) {
                         throw new IOException("Unexpected HTTP code" + response);
@@ -97,7 +97,7 @@ public class AnnonceViewActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
             }
         });
@@ -146,9 +146,13 @@ public class AnnonceViewActivity extends AppCompatActivity {
         contactTextView.setText(getString(R.string.contact) + " " + annonce.getPseudo());
         emailTextView.setText(annonce.getEmailContact());
         phoneTextView.setText(annonce.getTelContact());
-        Random r = new Random();
-        Glide.with(this)
-                .load(annonce.getImageUrl(r.nextInt(annonce.getImages().size())))
-                .into(imageView);
+        if(annonce.getImages().isEmpty()){
+            Glide.with(this).load(R.drawable.placeholder).into(imageView);
+        } else {
+            Random r = new Random();
+            Glide.with(this)
+                    .load(annonce.getImageUrl(r.nextInt(annonce.getImages().size())))
+                    .into(imageView);
+        }
     }
 }
