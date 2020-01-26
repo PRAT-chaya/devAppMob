@@ -1,8 +1,6 @@
 package com.example.tp4;
 
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,13 +8,11 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import okhttp3.OkHttpClient;
-
 public class MainActivity extends AppCompatActivity {
-    Button showAdButton;
-    Button addAdButton;
-    Button adsListButton;
-    Button profileButton;
+    private Button showAdButton;
+    private Button addAdButton;
+    private Button adsListButton;
+    private Button profileButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

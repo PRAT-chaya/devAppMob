@@ -14,8 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,9 +31,9 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
 public class AnnonceViewActivity extends AppCompatActivity {
-    TextView adTitleTextView, priceTextView, locationTextView, descTextView,
+    private TextView adTitleTextView, priceTextView, locationTextView, descTextView,
             dateTextView, contactTextView, emailTextView, phoneTextView;
-    ImageView imageView;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +103,7 @@ public class AnnonceViewActivity extends AppCompatActivity {
 
     public void parseResponse(String response) {
         Log.i("TP4", response);
-        Snackbar.make( findViewById(R.id.main), "On parse la réponse", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.main), "On parse la réponse", Snackbar.LENGTH_LONG).show();
 
         // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
         Moshi moshi = new Moshi.Builder().add(new ApiAnnonceAdapter()).build();
@@ -146,7 +144,7 @@ public class AnnonceViewActivity extends AppCompatActivity {
         contactTextView.setText(getString(R.string.contact) + " " + annonce.getPseudo());
         emailTextView.setText(annonce.getEmailContact());
         phoneTextView.setText(annonce.getTelContact());
-        if(annonce.getImages().isEmpty()){
+        if (annonce.getImages().isEmpty()) {
             Glide.with(this).load(R.drawable.placeholder).into(imageView);
         } else {
             Random r = new Random();
