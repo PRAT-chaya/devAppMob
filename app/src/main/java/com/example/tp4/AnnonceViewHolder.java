@@ -1,10 +1,10 @@
 package com.example.tp4;
 
+import android.app.Activity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -23,16 +23,18 @@ public class AnnonceViewHolder extends RecyclerView.ViewHolder {
         titreTextView = (TextView) itemView.findViewById(R.id.itemTitreTextView);
         prixTextView = (TextView) itemView.findViewById(R.id.itemPrixTextView);
         locationTextView = (TextView) itemView.findViewById(R.id.itemLocationTextView);
-        ImageView imageView = (ImageView) itemView.findViewById(R.id.itemImageView);
+        imageView = (ImageView) itemView.findViewById(R.id.itemImageView);
     }
 
     public void bind(Annonce annonce) {
         titreTextView.setText(annonce.getTitre());
-        prixTextView.setText(annonce.getPrix());
+        prixTextView.setText(String.valueOf(annonce.getPrix()));
         locationTextView.setText(annonce.getCp() + " " + annonce.getVille());
         Random r = new Random();
-        Glide.with(imageView)
+        Activity a = (Activity) itemView.getContext();
+        Glide.with(a)
                 .load(annonce.getImageUrl(r.nextInt(annonce.getImages().size())))
+                //.load("http://farm5.staticflickr.com/4609/38984233005_99ebb2a81a_q.jpg")
                 .into(imageView);
     }
 }

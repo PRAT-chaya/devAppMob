@@ -18,6 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AnnonceViewActivity"></activity>
+        <activity android:name=".AnnonceListViewActivity"></activity>
     </application>
 
 </manifest>
