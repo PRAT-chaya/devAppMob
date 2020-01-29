@@ -11,10 +11,12 @@ import java.util.List;
 public class AnnonceListAdapter extends RecyclerView.Adapter<AnnonceViewHolder> {
 
     List<Annonce> list;
+    private OnAnnonceListener onAnnonceListener;
 
     // donner la liste à l'adapteur
-    public AnnonceListAdapter(List<Annonce> list) {
+    public AnnonceListAdapter(List<Annonce> list, OnAnnonceListener onAnnonceListener) {
         this.list = list;
+        this.onAnnonceListener = onAnnonceListener;
     }
 
     // créer les conteneurs de vue
@@ -22,7 +24,7 @@ public class AnnonceListAdapter extends RecyclerView.Adapter<AnnonceViewHolder> 
     @Override
     public AnnonceViewHolder onCreateViewHolder(ViewGroup viewGroup, int itemType) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, viewGroup,false);
-        return new AnnonceViewHolder(view);
+        return new AnnonceViewHolder(view, onAnnonceListener);
     }
 
     // méthode appelée lorsque un conteneur de vue (pour un item) reçoit l'objet qui servira à remplir l'item
@@ -38,4 +40,5 @@ public class AnnonceListAdapter extends RecyclerView.Adapter<AnnonceViewHolder> 
     public int getItemCount() {
         return list.size();
     }
+
 }

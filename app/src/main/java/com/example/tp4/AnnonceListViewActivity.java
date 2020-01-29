@@ -1,6 +1,8 @@
 package com.example.tp4;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,9 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnnonceListViewActivity extends AppCompatActivity {
+public class AnnonceListViewActivity extends AppCompatActivity implements OnAnnonceListener {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
+    private List<Annonce> mockList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -20,9 +23,9 @@ public class AnnonceListViewActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        List<Annonce> mockList = makeMockList();
+        mockList = makeMockList();
 
-        mAdapter = new AnnonceListAdapter(mockList);
+        mAdapter = new AnnonceListAdapter(mockList, this);
         recyclerView.setAdapter(mAdapter);
     }
 
@@ -103,5 +106,17 @@ public class AnnonceListViewActivity extends AppCompatActivity {
             stringList.add(uri);
         }
         return stringList;
+    }
+
+    @Override
+    public void onAnnonceClick(int position) {
+        Log.d("hello","onAnnonceClick : clicked " + mockList.get(position).titre);
+
+        Intent intent = new Intent(this, AnnonceViewActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("HELLO",mockList.get(position));
+        intent.putExtras(bundle);
+        startActivity(intent);
+
     }
 }

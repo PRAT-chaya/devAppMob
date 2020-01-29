@@ -34,14 +34,25 @@ public class AnnonceViewActivity extends AppCompatActivity {
     private TextView adTitleTextView, priceTextView, locationTextView, descTextView,
             dateTextView, contactTextView, emailTextView, phoneTextView;
     private ImageView imageView;
+    private Annonce fedAnnonce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.annonce_view);
 
+        Bundle bundle = getIntent().getExtras();
+        if(bundle == null) {
+            fedAnnonce = null;
+        } else {
+            fedAnnonce = (Annonce) bundle.getSerializable("HELLO");
+        }
+
         initViews();
-        if (isConnected(this)) {
+        if (fedAnnonce != null){
+            fillView(fedAnnonce);
+        }
+        else if (isConnected(this)) {
             apiCall(getCurrentFocus());
         } else {
             MockAnnonce mock = new MockAnnonce();
