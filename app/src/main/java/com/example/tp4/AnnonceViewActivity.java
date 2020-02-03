@@ -146,7 +146,7 @@ public class AnnonceViewActivity extends AppCompatActivity {
 
     private void fillView(Annonce annonce) {
         adTitleTextView.setText(annonce.getTitre());
-        priceTextView.setText(String.valueOf(annonce.getPrix()));
+        priceTextView.setText(String.valueOf(annonce.getPrix() + "€"));
         locationTextView.setText(annonce.getCp() + " " + annonce.getVille());
         descTextView.setText(annonce.getDescription());
         Date date = new Date(annonce.getDate());

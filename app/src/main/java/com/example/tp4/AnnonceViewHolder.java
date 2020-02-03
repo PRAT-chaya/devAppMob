@@ -31,14 +31,17 @@ public class AnnonceViewHolder extends RecyclerView.ViewHolder implements View.O
 
     public void bind(Annonce annonce) {
         titreTextView.setText(annonce.getTitre());
-        prixTextView.setText(String.valueOf(annonce.getPrix()));
+        prixTextView.setText(String.valueOf(annonce.getPrix() + "€"));
         locationTextView.setText(annonce.getCp() + " " + annonce.getVille());
         Random r = new Random();
         Activity a = (Activity) itemView.getContext();
-        Glide.with(a)
-                .load(annonce.getImageUrl(r.nextInt(annonce.getImages().size())))
-                //.load("http://farm5.staticflickr.com/4609/38984233005_99ebb2a81a_q.jpg")
-                .into(imageView);
+        int imageNbr = annonce.getImages().size();
+        if(imageNbr > 0){
+            Glide.with(a)
+                    .load(annonce.getImageUrl(r.nextInt(imageNbr)))
+                    //.load("http://farm5.staticflickr.com/4609/38984233005_99ebb2a81a_q.jpg")
+                    .into(imageView);
+        }
     }
 
     @Override
