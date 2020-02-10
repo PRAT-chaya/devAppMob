@@ -48,5 +48,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        addAdButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AnnonceCreatorActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
