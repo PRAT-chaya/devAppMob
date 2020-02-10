@@ -36,7 +36,7 @@
             app:layout_constraintTop_toBottomOf="@+id/editTitle" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/btnAddPicture"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Ajouter image"
@@ -64,7 +64,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button" />
+            app:layout_constraintTop_toBottomOf="@+id/btnAddPicture" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -58,7 +58,7 @@ public class AnnonceViewActivity extends AppCompatActivity {
         }
 
         initViews();
-        if (fedAnnonce != null){
+        if (fedAnnonce != null) {
             fillView(fedAnnonce);
         }
         else if (isConnected(this)) {
