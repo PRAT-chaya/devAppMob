@@ -7,4 +7,9 @@
     <string name="published">Publié le</string>
     <string name="at">à</string>
     <string name="contact">Contacter</string>
+    <string name="edit">Éditer</string>
+    <string name="username">Pseudo</string>
+    <string name="email">Adresse email</string>
+    <string name="phonenumber">Numéro de tél</string>
+    <string name="prefs_saved">Préférences sauvegardées !</string>
 </resources>

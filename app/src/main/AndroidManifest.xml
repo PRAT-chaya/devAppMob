@@ -19,6 +19,7 @@
         </activity>
         <activity android:name=".AnnonceViewActivity"></activity>
         <activity android:name=".AnnonceListViewActivity"></activity>
+        <activity android:name=".ProfilViewActivity"></activity>
     </application>
 
 </manifest>

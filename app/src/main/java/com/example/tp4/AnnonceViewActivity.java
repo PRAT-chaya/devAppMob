@@ -1,6 +1,7 @@
 package com.example.tp4;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -43,7 +44,7 @@ public class AnnonceViewActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         if(bundle == null) {
-            fedAnnonce = null;
+            fedAnnonce = new MockAnnonce();
         } else {
             fedAnnonce = (Annonce) bundle.getSerializable("HELLO");
         }
@@ -55,8 +56,7 @@ public class AnnonceViewActivity extends AppCompatActivity {
         else if (isConnected(this)) {
             apiCall(getCurrentFocus());
         } else {
-            MockAnnonce mock = new MockAnnonce();
-            fillView(mock);
+            fillView(fedAnnonce);
         }
     }
 
