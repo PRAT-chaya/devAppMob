@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
@@ -58,6 +59,7 @@ public class AnnonceViewActivity extends AppCompatActivity {
         }
 
         phoneTextView.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
                 sendPhoneCall();
@@ -85,17 +87,9 @@ public class AnnonceViewActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void sendPhoneCall() {
-        Intent callIntent = new Intent(Intent.ACTION_CALL);
 
-        callIntent.setData(Uri.parse("tel:" + 33 + phoneTextView.getText()));
-
-        if (checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-
-            System.out.println("Insufficient permissions call :(");
-            return;
-        }
-
-        startActivity(callIntent);
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneTextView.getText()));
+        startActivity(intent);
     }
 
     protected boolean isConnected(Context context) {
