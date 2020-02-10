@@ -1,17 +1,38 @@
 package com.example.tp4;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnnonceListViewActivity extends AppCompatActivity {
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
+public class AnnonceListViewActivity extends AppCompatActivity implements OnAnnonceListener {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
+    private List<Annonce> itemsList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -20,10 +41,28 @@ public class AnnonceListViewActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        List<Annonce> mockList = makeMockList();
 
-        mAdapter = new AnnonceListAdapter(mockList);
-        recyclerView.setAdapter(mAdapter);
+        if (isConnected(this)) {
+            apiCall(getCurrentFocus());
+        } else {
+            itemsList = makeMockList();
+            fillRecyclerView(itemsList);
+        }
+    }
+
+    protected boolean isConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null && activeNetwork.isConnected()) {
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                Snackbar.make(findViewById(R.id.recyclerView), "Connecté au Wifi", Snackbar.LENGTH_LONG).show();
+                return true;
+            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                Snackbar.make(findViewById(R.id.recyclerView), "Connecté au data", Snackbar.LENGTH_LONG).show();
+                return true;
+            }
+        }
+        return false;
     }
 
     private static List<Annonce> makeMockList() {
@@ -103,5 +142,81 @@ public class AnnonceListViewActivity extends AppCompatActivity {
             stringList.add(uri);
         }
         return stringList;
+    }
+
+    protected void apiCall(View view) {
+        makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/liste.json");
+        //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/completeAdWithImages.json");
+        //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/completeAd.json");
+        //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/erreur.json");
+    }
+
+    private void makeApiCall(String url) {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Unexpected HTTP code" + response);
+                    }
+                    final String body = responseBody.string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseResponse(body);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void parseResponse(String response) {
+        Snackbar.make(findViewById(R.id.recyclerView), "On parse la réponse", Snackbar.LENGTH_LONG).show();
+
+        // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
+        Moshi moshi = new Moshi.Builder().add(new ApiAnnonceListAdapter()).build();
+        // créer l'adapteur pour Annonce
+        Type type = Types.newParameterizedType(List.class, Annonce.class);
+        JsonAdapter<List<Annonce>> jsonAdapter = moshi.adapter(type);
+
+        try {
+            // response est la String qui contient le JSON de la réponse
+            List<Annonce> wrapper = jsonAdapter.fromJson(response);
+
+            if(!wrapper.isEmpty()){
+                itemsList = wrapper;
+                fillRecyclerView(wrapper);
+            }
+        } catch (IOException e) {
+            Log.i("TP_DEBUG_WESH_WESH", "Erreur I/O");
+        }
+    }
+
+    private void fillRecyclerView(List<Annonce> itemsList){
+        mAdapter = new AnnonceListAdapter(itemsList, this);
+        recyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onAnnonceClick(int position) {
+        //Log.d("hello", "onAnnonceClick : clicked " + itemsList.get(position).titre);
+
+        Intent intent = new Intent(this, AnnonceViewActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("HELLO", itemsList.get(position));
+        intent.putExtras(bundle);
+        startActivity(intent);
+
     }
 }

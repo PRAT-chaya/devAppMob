@@ -1,8 +1,9 @@
 package com.example.tp4;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Annonce {
+public class Annonce implements Serializable {
     protected String id;
     protected String titre;
     protected String description;

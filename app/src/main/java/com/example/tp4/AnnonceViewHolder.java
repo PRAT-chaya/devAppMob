@@ -11,30 +11,41 @@ import com.bumptech.glide.Glide;
 
 import java.util.Random;
 
-public class AnnonceViewHolder extends RecyclerView.ViewHolder {
+public class AnnonceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private TextView titreTextView, prixTextView, locationTextView;
     private ImageView imageView;
+    OnAnnonceListener onAnnonceListener;
 
     // itemView est la vue correspondante à 1 item
-    public AnnonceViewHolder(View itemView) {
+    public AnnonceViewHolder(View itemView, OnAnnonceListener onAnnonceListener) {
         super(itemView);
         //obtenir les éléments de la vue d'un item
         titreTextView = (TextView) itemView.findViewById(R.id.itemTitreTextView);
         prixTextView = (TextView) itemView.findViewById(R.id.itemPrixTextView);
         locationTextView = (TextView) itemView.findViewById(R.id.itemLocationTextView);
         imageView = (ImageView) itemView.findViewById(R.id.itemImageView);
+        this.onAnnonceListener = onAnnonceListener;
+        itemView.setOnClickListener(this);
     }
 
     public void bind(Annonce annonce) {
         titreTextView.setText(annonce.getTitre());
-        prixTextView.setText(String.valueOf(annonce.getPrix()));
+        prixTextView.setText(String.valueOf(annonce.getPrix() + "€"));
         locationTextView.setText(annonce.getCp() + " " + annonce.getVille());
         Random r = new Random();
         Activity a = (Activity) itemView.getContext();
-        Glide.with(a)
-                .load(annonce.getImageUrl(r.nextInt(annonce.getImages().size())))
-                //.load("http://farm5.staticflickr.com/4609/38984233005_99ebb2a81a_q.jpg")
-                .into(imageView);
+        int imageNbr = annonce.getImages().size();
+        if(imageNbr > 0){
+            Glide.with(a)
+                    .load(annonce.getImageUrl(r.nextInt(imageNbr)))
+                    //.load("http://farm5.staticflickr.com/4609/38984233005_99ebb2a81a_q.jpg")
+                    .into(imageView);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        this.onAnnonceListener.onAnnonceClick(getAdapterPosition());
     }
 }
