@@ -1,19 +1,27 @@
 package com.example.tp4;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.Console;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,12 +49,53 @@ public class AnnonceViewActivity extends AppCompatActivity {
         setContentView(R.layout.annonce_view);
 
         initViews();
+
         if (isConnected(this)) {
             apiCall(getCurrentFocus());
         } else {
             MockAnnonce mock = new MockAnnonce();
             fillView(mock);
         }
+
+        phoneTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendPhoneCall();
+            }
+        });
+
+        emailTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendEmail();
+            }
+        });
+    }
+
+    public void sendEmail() {
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, contactTextView.getText());
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Contact : " + adTitleTextView.getText());
+
+        emailIntent.setType("message/rfc822");
+
+        startActivity(Intent.createChooser(emailIntent, "Envoi de l'email..."));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void sendPhoneCall() {
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+
+        callIntent.setData(Uri.parse("tel:" + 33 + phoneTextView.getText()));
+
+        if (checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+
+            System.out.println("Insufficient permissions call :(");
+            return;
+        }
+
+        startActivity(callIntent);
     }
 
     protected boolean isConnected(Context context) {
@@ -103,7 +152,7 @@ public class AnnonceViewActivity extends AppCompatActivity {
 
     public void parseResponse(String response) {
         Log.i("TP4", response);
-        Snackbar.make(findViewById(R.id.main), "On parse la réponse", Snackbar.LENGTH_LONG).show();
+        //Snackbar.make(findViewById(R.id.main), "On parse la réponse", Snackbar.LENGTH_LONG).show();
 
         // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
         Moshi moshi = new Moshi.Builder().add(new ApiAnnonceAdapter()).build();
