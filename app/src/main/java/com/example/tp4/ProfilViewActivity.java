@@ -22,8 +22,7 @@ public class ProfilViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profil_view);
-
-        sharedPrefs = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        sharedPrefs  = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         initView();
         fillView();
 

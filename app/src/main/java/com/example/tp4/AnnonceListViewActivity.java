@@ -182,8 +182,6 @@ public class AnnonceListViewActivity extends AppCompatActivity implements OnAnno
     }
 
     public void parseResponse(String response) {
-        Snackbar.make(findViewById(R.id.recyclerView), "On parse la réponse", Snackbar.LENGTH_LONG).show();
-
         // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
         Moshi moshi = new Moshi.Builder().add(new ApiAnnonceListAdapter()).build();
         // créer l'adapteur pour Annonce

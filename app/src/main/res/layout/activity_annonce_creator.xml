@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/annonce_creator_main_layout"
     tools:context=".AnnonceCreatorActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,8 +20,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:hint="@string/title"
             android:inputType="textPersonName"
-            android:text="Titre"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -30,19 +31,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:hint="@string/price"
             android:inputType="number"
-            android:text="Prix"
             app:layout_constraintStart_toStartOf="@+id/editTitle"
             app:layout_constraintTop_toBottomOf="@+id/editTitle" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/addImageButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Ajouter image"
             app:layout_constraintEnd_toEndOf="@+id/editDescription"
             app:layout_constraintStart_toStartOf="@+id/editDescription"
-            app:layout_constraintTop_toBottomOf="@+id/editDescription" />
+            app:layout_constraintTop_toBottomOf="@id/editCP" />
 
         <EditText
             android:id="@+id/editDescription"
@@ -50,11 +51,33 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:gravity="start|top"
+            android:hint="@string/description"
             android:inputType="textMultiLine"
-            android:text="Description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editPrix" />
+
+        <EditText
+            android:id="@+id/editVille"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/city"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editDescription" />
+
+        <EditText
+            android:id="@+id/editCP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/postcode"
+            android:inputType="text|numberDecimal|textCapCharacters"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editVille" />
 
         <Button
             android:id="@+id/buttonEnvoi"
@@ -64,7 +87,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button" />
+            app:layout_constraintTop_toBottomOf="@id/addImageButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

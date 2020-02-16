@@ -12,4 +12,9 @@
     <string name="email">Email address</string>
     <string name="phonenumber">Phone number</string>
     <string name="prefs_saved">Preferences saved !</string>
+    <string name="title">Title</string>
+    <string name="price">Price</string>
+    <string name="description">Description</string>
+    <string name="city">City</string>
+    <string name="postcode">Postcode</string>
 </resources>
