@@ -12,8 +12,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".AnnonceCreatorActivity"></activity>
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
@@ -21,9 +21,41 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AnnonceViewActivity"></activity>
-        <activity android:name=".AnnonceListViewActivity"></activity>
-        <activity android:name=".ProfilViewActivity"></activity>
+
+        <activity
+            android:name=".AnnonceCreatorActivity"
+            android:parentActivityName="com.example.tp4.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.tp4.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".AnnonceViewActivity"
+            android:parentActivityName="com.example.tp4.MainActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.tp4.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".AnnonceListViewActivity"
+            android:parentActivityName="com.example.tp4.MainActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.tp4.MainActivity" />
+        </activity>
+
+        <activity android:name=".ProfilViewActivity">
+            android:parentActivityName="com.example.tp4.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.tp4.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

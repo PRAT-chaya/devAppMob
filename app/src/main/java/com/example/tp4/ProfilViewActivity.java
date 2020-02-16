@@ -8,7 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -22,6 +24,14 @@ public class ProfilViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profil_view);
+        Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
+
+        setSupportActionBar(myToolBar);
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
+
         sharedPrefs  = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         initView();
         fillView();
