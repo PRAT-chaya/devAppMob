@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TP4</string>
+    <string name="app_name">L3devAppMob</string>
     <string name="show_ad">Show ad</string>
     <string name="add_ad">Add ad</string>
     <string name="show_ads_list">Show ads list</string>
@@ -7,4 +7,14 @@
     <string name="published">Published </string>
     <string name="at">at</string>
     <string name="contact">Contact</string>
+    <string name="edit">Edit</string>
+    <string name="username">Username</string>
+    <string name="email">Email address</string>
+    <string name="phonenumber">Phone number</string>
+    <string name="prefs_saved">Preferences saved !</string>
+    <string name="title">Title</string>
+    <string name="price">Price</string>
+    <string name="description">Description</string>
+    <string name="city">City</string>
+    <string name="postcode">Postcode</string>
 </resources>

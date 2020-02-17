@@ -7,4 +7,14 @@
     <string name="published">Publié le</string>
     <string name="at">à</string>
     <string name="contact">Contacter</string>
+    <string name="edit">Éditer</string>
+    <string name="username">Pseudo</string>
+    <string name="email">Adresse email</string>
+    <string name="phonenumber">Numéro de tél</string>
+    <string name="prefs_saved">Préférences sauvegardées !</string>
+    <string name="title">Titre</string>
+    <string name="price">Prix</string>
+    <string name="description">Description</string>
+    <string name="city">Ville</string>
+    <string name="postcode">CP</string>
 </resources>

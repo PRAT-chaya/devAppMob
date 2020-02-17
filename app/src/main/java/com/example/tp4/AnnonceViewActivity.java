@@ -1,18 +1,25 @@
 package com.example.tp4;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -27,9 +34,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-
 public class AnnonceViewActivity extends AppCompatActivity {
     private TextView adTitleTextView, priceTextView, locationTextView, descTextView,
             dateTextView, contactTextView, emailTextView, phoneTextView;
@@ -40,10 +44,11 @@ public class AnnonceViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.annonce_view);
-
+        Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolBar);
         Bundle bundle = getIntent().getExtras();
         if(bundle == null) {
-            fedAnnonce = null;
+            fedAnnonce = new MockAnnonce();
         } else {
             fedAnnonce = (Annonce) bundle.getSerializable("HELLO");
         }
@@ -55,9 +60,41 @@ public class AnnonceViewActivity extends AppCompatActivity {
         else if (isConnected(this)) {
             apiCall(getCurrentFocus());
         } else {
-            MockAnnonce mock = new MockAnnonce();
-            fillView(mock);
+            fillView(fedAnnonce);
         }
+
+        phoneTextView.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View v) {
+                sendPhoneCall();
+            }
+        });
+
+        emailTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendEmail();
+            }
+        });
+    }
+
+    public void sendEmail() {
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, contactTextView.getText());
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Contact : " + adTitleTextView.getText());
+
+        emailIntent.setType("message/rfc822");
+
+        startActivity(Intent.createChooser(emailIntent, "Envoi de l'email..."));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void sendPhoneCall() {
+
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneTextView.getText()));
+        startActivity(intent);
     }
 
     protected boolean isConnected(Context context) {
@@ -113,9 +150,6 @@ public class AnnonceViewActivity extends AppCompatActivity {
     }
 
     public void parseResponse(String response) {
-        Log.i("TP4", response);
-        Snackbar.make(findViewById(R.id.main), "On parse la réponse", Snackbar.LENGTH_LONG).show();
-
         // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
         Moshi moshi = new Moshi.Builder().add(new ApiAnnonceAdapter()).build();
         // créer l'adapteur pour Annonce
@@ -124,8 +158,6 @@ public class AnnonceViewActivity extends AppCompatActivity {
         try {
             // response est la String qui contient le JSON de la réponse
             Annonce annonce = jsonAdapter.fromJson(response);
-            Log.i("TP4", "Désérialisation de la réponse");
-            Log.i("TP4", annonce.toString());
             fillView(annonce);
         } catch (IOException e) {
             Log.i("TP4", "Erreur I/O");
