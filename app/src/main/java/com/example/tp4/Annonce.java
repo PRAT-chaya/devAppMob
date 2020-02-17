@@ -1,6 +1,8 @@
 package com.example.tp4;
 
 import java.io.Serializable;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Annonce implements Serializable {
@@ -30,6 +32,20 @@ public class Annonce implements Serializable {
         this.cp = cp;
         this.images = images;
         this.date = date;
+    }
+
+    public Annonce(){
+        this.id = null;
+        this.titre = null;
+        this.description = null;
+        this.prix = 0;
+        this.pseudo = null;
+        this.emailContact = null;
+        this.telContact = null;
+        this.ville = null;
+        this.cp = null;
+        this.images = new ArrayList<String>();
+        this.date = 0;
     }
 
     public String getId() {

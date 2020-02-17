@@ -193,7 +193,6 @@ public class AnnonceListViewActivity extends AppCompatActivity implements OnAnno
         try {
             // response est la String qui contient le JSON de la réponse
             List<Annonce> wrapper = jsonAdapter.fromJson(response);
-
             if(!wrapper.isEmpty()){
                 itemsList = wrapper;
                 fillRecyclerView(wrapper);
