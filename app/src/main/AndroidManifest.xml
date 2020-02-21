@@ -12,7 +12,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AnnonceCreatorActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,8 +19,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AnnonceViewActivity" />
-        <activity android:name=".AnnonceListViewActivity" />
+        <activity
+            android:name=".AnnonceCreatorActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".AnnonceViewActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".AnnonceListViewActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ProfilViewActivity"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

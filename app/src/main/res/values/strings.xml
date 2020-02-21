@@ -17,4 +17,7 @@
     <string name="description">Description</string>
     <string name="city">City</string>
     <string name="postcode">Postcode</string>
+    <string name="all_ads">All ads</string>
+    <string name="my_ads">My ads</string>
+    <string name="add_pic">Add a picture</string>
 </resources>

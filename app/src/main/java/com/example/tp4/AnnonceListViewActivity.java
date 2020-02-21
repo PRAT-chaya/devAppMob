@@ -41,16 +41,16 @@ public class AnnonceListViewActivity extends AppCompatActivity implements OnAnno
         super.onCreate(savedInstanceState);
         setContentView(R.layout.annonce_recycler_layout);
 
-/*        Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolBar);
-        // Get a support ActionBar corresponding to this toolbar
-        ActionBar ab = getSupportActionBar();
-        // Enable the Up button
-        ab.setDisplayHomeAsUpEnabled(true);*/
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolBar);
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
 
         if (isConnected(this)) {
             apiCall(getCurrentFocus());
@@ -155,7 +155,7 @@ public class AnnonceListViewActivity extends AppCompatActivity implements OnAnno
     }
 
     protected void apiCall(View view) {
-        makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/liste.json");
+        makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/?apikey=21907858&method=listAll");
         //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/completeAdWithImages.json");
         //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/completeAd.json");
         //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/erreur.json");

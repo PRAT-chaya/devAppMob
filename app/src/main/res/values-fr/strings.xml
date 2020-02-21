@@ -17,4 +17,7 @@
     <string name="description">Description</string>
     <string name="city">Ville</string>
     <string name="postcode">CP</string>
+    <string name="all_ads">Toutes les annonces</string>
+    <string name="my_ads">Mes annonces</string>
+    <string name="add_pic">Ajouter une photo</string>
 </resources>
