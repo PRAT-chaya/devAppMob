@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    android:id="@+id/test_menu"
+    android:id="@+id/base_menu"
 
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
         android:id="@+id/action_add_annonce"
         android:icon="@drawable/ic_add_circle_black_24dp"
-        android:title="Favoris"
+        android:title="@string/add_ad"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_show_profil"
         android:icon="@drawable/ic_account_circle_black_24dp"
-        android:title="Favoris"
+        android:title="@string/my_profile"
         app:showAsAction="ifRoom"/>
 
     <!-- Settings, should always be in the overflow -->

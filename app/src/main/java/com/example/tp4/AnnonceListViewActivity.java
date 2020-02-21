@@ -2,10 +2,14 @@ package com.example.tp4;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.ActionBar;
@@ -35,28 +39,102 @@ public class AnnonceListViewActivity extends AppCompatActivity implements OnAnno
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private List<Annonce> itemsList;
+    private boolean listByPseudo;
+    private String pseudoToFilter;
+
+    private SharedPreferences sharedPrefs;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.annonce_recycler_layout);
 
+        sharedPrefs = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolBar);
-        // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
-        // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
+        listByPseudo = false;
+
+        Bundle bundle = getIntent().getExtras();
+
         if (isConnected(this)) {
-            apiCall(getCurrentFocus());
-        } else {
-            itemsList = makeMockList();
-            fillRecyclerView(itemsList);
+            if (bundle != null && bundle.containsKey("PSEUDO_TO_FILTER")) {
+                pseudoToFilter = bundle.getString("PSEUDO_TO_FILTER");
+                if( pseudoToFilter != null && !pseudoToFilter.equals("")) {
+                    listByPseudo = true;
+                    apiCall(getCurrentFocus(), ApiConf.METHOD.GET.listbyPseudo,
+                            ApiConf.PARAM.pseudo, pseudoToFilter);
+                }
+                else {
+                    apiCall(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
+                }
+            } else {
+                apiCall(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the base_menu; this adds items to the action bar if it is present.
+        //getMenuInflater().inflate(R.base_menu.main, base_menu);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.list_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_show_all_annonces:
+                Intent intent = new Intent(AnnonceListViewActivity.this, AnnonceListViewActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_show_my_annonces:
+                intent = new Intent(this, AnnonceListViewActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("PSEUDO_TO_FILTER", sharedPrefs.getString(Profil.username, ""));
+                intent.putExtras(bundle);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_add_pic:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+            case R.id.action_refresh_list:
+                if (isConnected(this)) {
+                    if (listByPseudo) {
+                        apiCall(getCurrentFocus(), ApiConf.METHOD.GET.listbyPseudo,
+                                ApiConf.PARAM.pseudo, pseudoToFilter);
+                    } else {
+                        apiCall(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
+                    }
+                }
+                return true;
+
+            case R.id.action_add_annonce:
+                intent = new Intent(AnnonceListViewActivity.this, AnnonceCreatorActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_show_profil:
+                intent = new Intent(AnnonceListViewActivity.this, ProfilViewActivity.class);
+                startActivity(intent);
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
         }
     }
 
@@ -154,11 +232,17 @@ public class AnnonceListViewActivity extends AppCompatActivity implements OnAnno
         return stringList;
     }
 
-    protected void apiCall(View view) {
-        makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/?apikey=21907858&method=listAll");
-        //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/completeAdWithImages.json");
-        //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/completeAd.json");
-        //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/erreur.json");
+    protected void apiCall(View view, String apiMethod) {
+        makeApiCall(ApiConf.API_URL + "?" + "apikey=" + ApiConf.API_KEY + "&method=" + apiMethod);
+    }
+
+    protected void apiCall(View view, String apiMethod, String paramName, String paramVal) {
+        makeApiCall(
+            ApiConf.API_URL + "?" +
+            "apikey=" + ApiConf.API_KEY +
+            "&method=" + apiMethod +
+            "&" + paramName + "=" + paramVal
+        );
     }
 
     private void makeApiCall(String url) {
@@ -201,7 +285,7 @@ public class AnnonceListViewActivity extends AppCompatActivity implements OnAnno
         try {
             // response est la String qui contient le JSON de la réponse
             List<Annonce> wrapper = jsonAdapter.fromJson(response);
-            if(!wrapper.isEmpty()){
+            if (!wrapper.isEmpty()) {
                 itemsList = wrapper;
                 fillRecyclerView(wrapper);
             }
@@ -210,7 +294,7 @@ public class AnnonceListViewActivity extends AppCompatActivity implements OnAnno
         }
     }
 
-    private void fillRecyclerView(List<Annonce> itemsList){
+    private void fillRecyclerView(List<Annonce> itemsList) {
         mAdapter = new AnnonceListAdapter(itemsList, this);
         recyclerView.setAdapter(mAdapter);
     }
