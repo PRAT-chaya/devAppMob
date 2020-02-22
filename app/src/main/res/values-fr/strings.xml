@@ -21,5 +21,6 @@
     <string name="my_ads">Mes annonces</string>
     <string name="add_pic">Ajouter une photo</string>
     <string name="refresh_list">Rafraîchir la liste</string>
+    <string name="edit_ad">Éditer l\'annonce</string>
 
 </resources>

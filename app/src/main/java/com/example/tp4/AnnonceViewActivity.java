@@ -2,6 +2,7 @@ package com.example.tp4;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -43,28 +44,38 @@ public class AnnonceViewActivity extends AppCompatActivity {
             dateTextView, contactTextView, emailTextView, phoneTextView;
     private ImageView imageView;
     private Annonce fedAnnonce;
+    private boolean isEditable;
+    private SharedPreferences sharedPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.annonce_view);
+
+        sharedPrefs = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+
         Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolBar);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
+        isEditable = false;
+
         Bundle bundle = getIntent().getExtras();
-        if(bundle == null) {
-            fedAnnonce = new MockAnnonce();
-        } else {
+        if (bundle != null && bundle.containsKey("HELLO")) {
             fedAnnonce = (Annonce) bundle.getSerializable("HELLO");
+            if(fedAnnonce.getPseudo().equals(sharedPrefs.getString(Profil.username, ""))){
+                isEditable = true;
+            }
+        } else {
+            fedAnnonce = new MockAnnonce();
         }
 
         initViews();
-        if (fedAnnonce != null){
+
+        if (fedAnnonce != null) {
             fillView(fedAnnonce);
-        }
-        else if (isConnected(this)) {
+        } else if (isConnected(this)) {
             apiCall(getCurrentFocus());
         } else {
             fillView(fedAnnonce);
@@ -84,6 +95,63 @@ public class AnnonceViewActivity extends AppCompatActivity {
                 sendEmail();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        if (isEditable) {
+            menuInflater.inflate(R.menu.editable_annonce_menu, menu);
+        } else {
+            menuInflater.inflate(R.menu.base_menu, menu);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_show_all_annonces:
+                Intent intent = new Intent(AnnonceViewActivity.this, AnnonceListViewActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_edit_annonce:
+                intent = new Intent(AnnonceViewActivity.this, AnnonceEditorActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("HELLO", fedAnnonce);
+                intent.putExtras(bundle);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_show_my_annonces:
+                intent = new Intent(this, AnnonceListViewActivity.class);
+                bundle = new Bundle();
+                bundle.putString("PSEUDO_TO_FILTER", sharedPrefs.getString(Profil.username, ""));
+                intent.putExtras(bundle);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_add_pic:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+            case R.id.action_add_annonce:
+                intent = new Intent(AnnonceViewActivity.this, AnnonceCreatorActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_show_profil:
+                intent = new Intent(AnnonceViewActivity.this, ProfilViewActivity.class);
+                startActivity(intent);
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
     public void sendEmail() {

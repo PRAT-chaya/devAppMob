@@ -63,9 +63,7 @@ public class AnnonceCreatorActivity extends AppCompatActivity {
 
         Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolBar);
-        // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
-        // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
         Button btnEnvoi = (Button) findViewById(R.id.buttonEnvoi);
         title = (EditText) findViewById(R.id.editTitle);
@@ -87,7 +85,7 @@ public class AnnonceCreatorActivity extends AppCompatActivity {
         });
     }
 
-    protected Boolean isValid(){
+    protected Boolean isValid() {
 
         String strTitre = title.getText().toString();
         String strPrix = price.getText().toString();
@@ -96,33 +94,32 @@ public class AnnonceCreatorActivity extends AppCompatActivity {
         String strCp = cp.getText().toString();
         Boolean hasError = false;
 
-        if(TextUtils.isEmpty(strTitre)) {
+        if (TextUtils.isEmpty(strTitre)) {
             title.setError("Le titre ne peux être vide");
             hasError = true;
         }
 
-        if(TextUtils.isEmpty(strPrix)) {
+        if (TextUtils.isEmpty(strPrix)) {
             price.setError("Le prix ne peux être vide");
             hasError = true;
         }
 
-        if(TextUtils.isEmpty(strDesc)) {
+        if (TextUtils.isEmpty(strDesc)) {
             description.setError("La description ne peux être vide");
             hasError = true;
         }
 
-        if(TextUtils.isEmpty(strVille)) {
+        if (TextUtils.isEmpty(strVille)) {
             description.setError("Le nom de ville ne peux être vide");
             hasError = true;
         }
 
-        if(TextUtils.isEmpty(strCp)) {
+        if (TextUtils.isEmpty(strCp)) {
             description.setError("Le Code Postal ne peux être vide");
             hasError = true;
         }
 
         return !hasError;
-
 
 
     }
@@ -143,7 +140,7 @@ public class AnnonceCreatorActivity extends AppCompatActivity {
     }
 
     protected void apiCall(View view) {
-        makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/");
+        makeApiCall(ApiConf.API_URL);
     }
 
     private void makeApiCall(String url) {
@@ -151,7 +148,7 @@ public class AnnonceCreatorActivity extends AppCompatActivity {
 
         RequestBody body = new FormBody.Builder()
                 .add("apikey", "21907858")
-                .add("method", "save")
+                .add("method", ApiConf.METHOD.POST.save)
                 .add("titre", title.getText().toString())
                 .add("description", description.getText().toString())
                 .add("prix", price.getText().toString())
