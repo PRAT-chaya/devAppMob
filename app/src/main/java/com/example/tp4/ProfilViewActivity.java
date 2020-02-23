@@ -13,7 +13,6 @@ import com.google.android.material.snackbar.Snackbar;
 public class ProfilViewActivity extends AbstractBaseActivity {
     private EditText usernameView, phonenumberView, mailAddressView;
     private Button savedPrefsButton;
-    private SharedPreferences sharedPrefs;
     private Editor editor;
 
     @Override
@@ -22,15 +21,16 @@ public class ProfilViewActivity extends AbstractBaseActivity {
         setContentView(R.layout.profil_view);
 
         initToolbar();
+        initView();
 
         sharedPrefs  = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        initView();
         fillView();
 
 
     }
 
-    private void initView(){
+    @Override
+    protected void initView(){
         usernameView = findViewById(R.id.usernameView);
         phonenumberView = findViewById(R.id.phonenumberView);
         mailAddressView = findViewById(R.id.mailAddressView);

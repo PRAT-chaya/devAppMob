@@ -1,4 +1,4 @@
-package com.example.tp4;
+package com.example.tp4.adapter;
 
 import androidx.viewpager.widget.PagerAdapter;
 
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.example.tp4.R;
 
 import java.util.ArrayList;
 import java.util.List;

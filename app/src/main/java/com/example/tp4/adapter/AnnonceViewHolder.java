@@ -1,4 +1,4 @@
-package com.example.tp4;
+package com.example.tp4.adapter;
 
 import android.app.Activity;
 import android.view.View;
@@ -8,8 +8,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-
-import java.util.Random;
+import com.example.tp4.Annonce;
+import com.example.tp4.R;
 
 public class AnnonceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 

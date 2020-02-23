@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -17,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,6 +25,7 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -40,11 +38,8 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
 
     protected EditText title, price, description, ville, cp;
     protected Button addImageButton, btnEnvoi;
-
     protected TextView textTargetUri;
     protected ImageView targetImage;
-
-    private SharedPreferences sharedPrefs;
 
     private Annonce fedAnnonce;
     private Uri targetUri;
@@ -56,17 +51,9 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
         setContentView(R.layout.activity_annonce_creator);
 
         initToolbar();
+        initView();
 
-        btnEnvoi = (Button) findViewById(R.id.buttonEnvoi);
-        title = (EditText) findViewById(R.id.editTitle);
-        price = (EditText) findViewById(R.id.editPrix);
-        description = (EditText) findViewById(R.id.editDescription);
-        ville = (EditText) findViewById(R.id.editVille);
-        cp = (EditText) findViewById(R.id.editCP);
-        addImageButton = findViewById(R.id.addImageButton);
-
-        textTargetUri = (TextView) findViewById(R.id.targeturi);
-        targetImage = (ImageView) findViewById(R.id.targetimage);
+        targetUri = null;
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.containsKey("HELLO")) {
@@ -86,15 +73,27 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
         btnEnvoi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isValid()){
-                    if (isConnected(getApplicationContext())) {
-                        apiCall(getCurrentFocus());
-                    } else {
-                        Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur de connexion", Snackbar.LENGTH_LONG).show();
-                    }
+                if (!textHasChanged() && !imageIsLoaded()){
+                    Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Vous n'avez rien modifié", Snackbar.LENGTH_LONG).show();
                 } else {
-                    Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur dans le formulaire", Snackbar.LENGTH_LONG).show();
-
+                    if (textHasChanged()) {
+                        if (isValid()) {
+                            if (isConnected(getApplicationContext())) {
+                                apiCallPOST(getCurrentFocus(), ApiConf.METHOD.POST.update);
+                            } else {
+                                Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur de connexion", Snackbar.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur dans le formulaire", Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                    if (imageIsLoaded()) {
+                        if (isConnected(getApplicationContext())) {
+                            apiCallPOST(getCurrentFocus(), ApiConf.METHOD.POST.addImage);
+                        } else {
+                            Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur de connexion", Snackbar.LENGTH_LONG).show();
+                        }
+                    }
                 }
             }
         });
@@ -110,14 +109,14 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
                 return true;
         }
 
-        return(super.onOptionsItemSelected(item));
+        return (super.onOptionsItemSelected(item));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK){
+        if (resultCode == RESULT_OK) {
             targetUri = data.getData();
             textTargetUri.setText(targetUri.getPath());
             try {
@@ -130,7 +129,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
         }
     }
 
-    private void fillTextFields(){
+    private void fillTextFields() {
         title.setText(fedAnnonce.getTitre());
         price.setText(String.valueOf(fedAnnonce.getPrix()));
         ville.setText(fedAnnonce.getVille());
@@ -138,7 +137,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
         description.setText(fedAnnonce.getDescription());
     }
 
-    protected Boolean isValid(){
+    protected boolean isValid() {
 
         String strTitre = title.getText().toString();
         String strPrix = price.getText().toString();
@@ -147,105 +146,185 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
         String strCp = cp.getText().toString();
         Boolean hasError = false;
 
-        if(TextUtils.isEmpty(strTitre)) {
+        if (TextUtils.isEmpty(strTitre)) {
             title.setError("Le titre ne peux être vide");
             hasError = true;
         }
 
-        if(TextUtils.isEmpty(strPrix)) {
+        if (TextUtils.isEmpty(strPrix)) {
             price.setError("Le prix ne peux être vide");
             hasError = true;
         }
 
-        if(TextUtils.isEmpty(strDesc)) {
+        if (TextUtils.isEmpty(strDesc)) {
             description.setError("La description ne peux être vide");
             hasError = true;
         }
 
-        if(TextUtils.isEmpty(strVille)) {
+        if (TextUtils.isEmpty(strVille)) {
             ville.setError("Le nom de ville ne peux être vide");
             hasError = true;
         }
 
-        if(TextUtils.isEmpty(strCp)) {
+        if (TextUtils.isEmpty(strCp)) {
             cp.setError("Le Code Postal ne peux être vide");
-            hasError = true;
-        }
-
-        if(targetUri == null || targetUri.toString().equals("")){
-            textTargetUri.setError("Image non choisie");
             hasError = true;
         }
 
         return !hasError;
 
 
-
     }
 
-    protected void apiCall(View view) {
-        try {
-            makeApiCall(ApiConf.API_URL);
-        } catch (FileNotFoundException e) {
-            Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur: impossible de créer temp", Snackbar.LENGTH_LONG).show();
-        } catch (IOException e){
-            Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur: impossible de créer temp", Snackbar.LENGTH_LONG).show();
+    protected boolean imageIsLoaded() {
+        if (targetUri == null || targetUri.toString().equals("")) {
+            textTargetUri.setError("Image non choisie");
+            return false;
+        } else {
+            return true;
         }
     }
 
-    private void makeApiCall(String url) throws FileNotFoundException, IOException {
+    protected boolean textHasChanged() {
+        String strTitre = title.getText().toString();
+        String strPrix = price.getText().toString();
+        String strDesc = description.getText().toString();
+        String strVille = ville.getText().toString();
+        String strCp = cp.getText().toString();
+
+        if (!strTitre.equals(fedAnnonce.getTitre())
+                || !strPrix.equals(fedAnnonce.getPrix())
+                || !strDesc.equals(fedAnnonce.getDescription())
+                || !strVille.equals(fedAnnonce.getVille())
+                || !strCp.equals(fedAnnonce.getCp())
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void makeApiCall(String url, String method) {
         OkHttpClient client = new OkHttpClient();
+        RequestBody body = null;
 
-        File temp = File.createTempFile("temp", ".jpg");
+        boolean isLastRequest = false;
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
-        byte[] myByteArray = baos.toByteArray();
+        if (method.equals(ApiConf.METHOD.POST.update)) {
+            FormBody.Builder builder = new FormBody.Builder()
+                    .add(ApiConf.PARAM.apikey, ApiConf.API_KEY)
+                    .add(ApiConf.PARAM.method, method)
+                    .add(ApiConf.PARAM.id, fedAnnonce.getId());
 
-        try (FileOutputStream fos = new FileOutputStream(temp)) {
-            fos.write(myByteArray);
+            String strTitre = title.getText().toString();
+            String strPrix = price.getText().toString();
+            String strDesc = description.getText().toString();
+            String strVille = ville.getText().toString();
+            String strCp = cp.getText().toString();
+
+            if(!strTitre.equals(fedAnnonce.getTitre())){
+                builder.add(ApiConf.PARAM.titre, strTitre);
+            }
+            if (!strPrix.equals(fedAnnonce.getPrix())) {
+                builder.add(ApiConf.PARAM.prix, price.getText().toString());
+            }
+            if (!strDesc.equals(fedAnnonce.getDescription())) {
+                builder.add(ApiConf.PARAM.description, description.getText().toString());
+            }
+            if (!strVille.equals(fedAnnonce.getVille())) {
+                builder.add(ApiConf.PARAM.ville, ville.getText().toString());
+            }
+            if (!strCp.equals(fedAnnonce.getCp())) {
+                builder .add(ApiConf.PARAM.cp, cp.getText().toString());
+            }
+
+            body = builder.build();
+
+            isLastRequest = !imageIsLoaded();
+
+        } else if (method.equals(ApiConf.METHOD.POST.addImage)) {
+            File temp;
+            try {
+                temp = File.createTempFile("temp", ".jpg");
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+                byte[] myByteArray = baos.toByteArray();
+
+                try (FileOutputStream fos = new FileOutputStream(temp)) {
+                    fos.write(myByteArray);
+                }
+
+                body = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart(ApiConf.PARAM.apikey, ApiConf.API_KEY)
+                        .addFormDataPart(ApiConf.PARAM.method, ApiConf.METHOD.POST.addImage)
+                        .addFormDataPart(ApiConf.PARAM.id, fedAnnonce.getId())
+                        .addFormDataPart(ApiConf.PARAM.photo, targetUri.getPath(),
+                                RequestBody.create(MediaType.parse("application/octet-stream"), temp))
+                        .build();
+
+
+            } catch (IOException e) {
+                Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur: impossible de créer temp", Snackbar.LENGTH_LONG).show();
+            }
+            isLastRequest = true;
         }
 
-        RequestBody body = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("apikey", "21907858")
-                .addFormDataPart("method", ApiConf.METHOD.POST.addImage)
-                .addFormDataPart("id", fedAnnonce.getId())
-                .addFormDataPart("photo", targetUri.getPath(),
-                        RequestBody.create(MediaType.parse("application/octet-stream"), temp))
-                .build();
+        if (body != null) {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .method("POST", body)
+                    .addHeader("Content-Type", "text/plain")
+                    .build();
 
-        Request request = new Request.Builder()
-                .url(url)
-                .method("POST", body)
-                .addHeader("Content-Type", "text/plain")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Échec du POST, réponse négative", Snackbar.LENGTH_LONG).show();
-                        throw new IOException("Unexpected HTTP code" + response);
-                    } else {
-                        Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Envoi réussi !", Snackbar.LENGTH_LONG).show();
-                        final String body = responseBody.string();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                parseResponse(body);
-                            }
-                        });
+            final boolean canParse = isLastRequest;
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    try (ResponseBody responseBody = response.body()) {
+                        if (!response.isSuccessful()) {
+                            Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Échec du POST, réponse négative", Snackbar.LENGTH_LONG).show();
+                            throw new IOException("Unexpected HTTP code" + response);
+                        } else {
+                            Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Envoi réussi !", Snackbar.LENGTH_LONG).show();
+                            final String body = responseBody.string();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(canParse){
+                                        parseResponse(body);
+                                    }
+                                }
+                            });
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-        });
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } else {
+            Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur: Corps de requête vide", Snackbar.LENGTH_LONG).show();
+        }
+
+    }
+
+
+    @Override
+    protected void initView() {
+        btnEnvoi = (Button) findViewById(R.id.buttonEnvoi);
+        title = (EditText) findViewById(R.id.editTitle);
+        price = (EditText) findViewById(R.id.editPrix);
+        description = (EditText) findViewById(R.id.editDescription);
+        ville = (EditText) findViewById(R.id.editVille);
+        cp = (EditText) findViewById(R.id.editCP);
+        addImageButton = findViewById(R.id.addImageButton);
+
+        textTargetUri = (TextView) findViewById(R.id.targeturi);
+        targetImage = (ImageView) findViewById(R.id.targetimage);
     }
 }
 

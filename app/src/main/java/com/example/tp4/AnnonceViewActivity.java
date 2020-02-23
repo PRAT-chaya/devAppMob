@@ -2,7 +2,6 @@ package com.example.tp4;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -20,6 +19,8 @@ import androidx.annotation.RequiresApi;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.example.tp4.adapter.ApiAnnonceAdapter;
+import com.example.tp4.adapter.SlidingImageAdapter;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -50,14 +51,15 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
 
     private Annonce fedAnnonce;
     private boolean isEditable;
-    private SharedPreferences sharedPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.annonce_view);
         sharedPrefs = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+
         initToolbar();
+        initView();
 
         isEditable = false;
         imageUrlList = new ArrayList();
@@ -73,7 +75,6 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
             fedAnnonce = new MockAnnonce();
         }
 
-        initViews();
 
         if (fedAnnonce != null) {
             fillView(fedAnnonce);
@@ -241,17 +242,6 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
         }
     }
 
-    private void initViews() {
-        adTitleTextView = findViewById(R.id.adTitleTextView);
-        priceTextView = findViewById(R.id.priceTextView);
-        locationTextView = findViewById(R.id.locationTextView);
-        descTextView = findViewById(R.id.descTextView);
-        dateTextView = findViewById(R.id.dateTextView);
-        contactTextView = findViewById(R.id.contactTextView);
-        emailTextView = findViewById(R.id.emailTextView);
-        phoneTextView = findViewById(R.id.phoneTextView);
-    }
-
     private void fillView(Annonce annonce) {
         adTitleTextView.setText(annonce.getTitre());
         priceTextView.setText(String.valueOf(annonce.getPrix() + "€"));
@@ -301,5 +291,17 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
                 }
             });
         }
+    }
+
+    @Override
+    protected void initView() {
+        adTitleTextView = findViewById(R.id.adTitleTextView);
+        priceTextView = findViewById(R.id.priceTextView);
+        locationTextView = findViewById(R.id.locationTextView);
+        descTextView = findViewById(R.id.descTextView);
+        dateTextView = findViewById(R.id.dateTextView);
+        contactTextView = findViewById(R.id.contactTextView);
+        emailTextView = findViewById(R.id.emailTextView);
+        phoneTextView = findViewById(R.id.phoneTextView);
     }
 }

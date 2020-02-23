@@ -2,17 +2,18 @@ package com.example.tp4;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tp4.adapter.AnnonceListAdapter;
+import com.example.tp4.adapter.ApiAnnonceListAdapter;
+import com.example.tp4.adapter.OnAnnonceListener;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -36,19 +37,15 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
     private boolean listByPseudo;
     private String pseudoToFilter;
 
-    private SharedPreferences sharedPrefs;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.annonce_recycler_layout);
 
-        sharedPrefs = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         initToolbar();
+        initView();
+
+        sharedPrefs = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         listByPseudo = false;
 
@@ -59,22 +56,20 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
                 pseudoToFilter = bundle.getString("PSEUDO_TO_FILTER");
                 if( pseudoToFilter != null && !pseudoToFilter.equals("")) {
                     listByPseudo = true;
-                    apiCall(getCurrentFocus(), ApiConf.METHOD.GET.listbyPseudo,
+                    apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listbyPseudo,
                             ApiConf.PARAM.pseudo, pseudoToFilter);
                 }
                 else {
-                    apiCall(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
+                    apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
                 }
             } else {
-                apiCall(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
+                apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
             }
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the base_menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.base_menu.main, base_menu);
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.list_menu, menu);
         return true;
@@ -103,10 +98,10 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
             case R.id.action_refresh_list:
                 if (isConnected(this)) {
                     if (listByPseudo) {
-                        apiCall(getCurrentFocus(), ApiConf.METHOD.GET.listbyPseudo,
+                        apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listbyPseudo,
                                 ApiConf.PARAM.pseudo, pseudoToFilter);
                     } else {
-                        apiCall(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
+                        apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
                     }
                 }
                 return true;
@@ -208,20 +203,8 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
         return stringList;
     }
 
-    protected void apiCall(View view, String apiMethod) {
-        makeApiCall(ApiConf.API_URL + "?" + "apikey=" + ApiConf.API_KEY + "&method=" + apiMethod);
-    }
-
-    protected void apiCall(View view, String apiMethod, String paramName, String paramVal) {
-        makeApiCall(
-            ApiConf.API_URL + "?" +
-            "apikey=" + ApiConf.API_KEY +
-            "&method=" + apiMethod +
-            "&" + paramName + "=" + paramVal
-        );
-    }
-
-    private void makeApiCall(String url) {
+    @Override
+    protected void makeApiCall(String url, String method) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
@@ -251,6 +234,7 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
         });
     }
 
+    @Override
     public void parseResponse(String response) {
         // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
         Moshi moshi = new Moshi.Builder().add(new ApiAnnonceListAdapter()).build();
@@ -285,5 +269,11 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
         intent.putExtras(bundle);
         startActivity(intent);
 
+    }
+
+    @Override
+    protected void initView() {
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 }

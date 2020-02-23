@@ -23,7 +23,7 @@
         </activity>
         <activity
             android:name=".AnnonceCreatorActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".AnnonceListViewActivity" />
         <activity
             android:name=".AnnonceEditorActivity"
             android:parentActivityName=".AnnonceViewActivity" />
@@ -35,7 +35,7 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ProfilViewActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".AnnonceListViewActivity" />
     </application>
 
 </manifest>

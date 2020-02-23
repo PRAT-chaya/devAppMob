@@ -1,18 +1,14 @@
 package com.example.tp4;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 
@@ -29,8 +25,8 @@ import okhttp3.ResponseBody;
 public class AnnonceCreatorActivity extends AbstractApiConnectedActivity {
 
     protected EditText title, price, description, ville, cp;
+    protected Button btnEnvoi;
     protected MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private SharedPreferences sharedPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +34,15 @@ public class AnnonceCreatorActivity extends AbstractApiConnectedActivity {
         setContentView(R.layout.activity_annonce_creator);
 
         initToolbar();
+        initView();
 
-        Button btnEnvoi = (Button) findViewById(R.id.buttonEnvoi);
-        title = (EditText) findViewById(R.id.editTitle);
-        price = (EditText) findViewById(R.id.editPrix);
-        description = (EditText) findViewById(R.id.editDescription);
-        ville = (EditText) findViewById(R.id.editVille);
-        cp = (EditText) findViewById(R.id.editCP);
         sharedPrefs = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         btnEnvoi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isConnected(getApplicationContext()) && isValid()) {
-                    apiCall(v);
+                    apiCallPOST(v, ApiConf.METHOD.POST.save);
                 } else {
                     Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur de connexion", Snackbar.LENGTH_LONG).show();
                 }
@@ -98,24 +89,21 @@ public class AnnonceCreatorActivity extends AbstractApiConnectedActivity {
 
     }
 
-    protected void apiCall(View view) {
-        makeApiCall(ApiConf.API_URL);
-    }
-
-    private void makeApiCall(String url) {
+    @Override
+    protected void makeApiCall(String url, String method) {
         OkHttpClient client = new OkHttpClient();
 
         RequestBody body = new FormBody.Builder()
-                .add("apikey", "21907858")
-                .add("method", ApiConf.METHOD.POST.save)
-                .add("titre", title.getText().toString())
-                .add("description", description.getText().toString())
-                .add("prix", price.getText().toString())
-                .add("pseudo", sharedPrefs.getString(Profil.username, ""))
-                .add("emailContact", sharedPrefs.getString(Profil.emailAddress, ""))
-                .add("telContact", sharedPrefs.getString(Profil.phoneNumber, ""))
-                .add("ville", ville.getText().toString())
-                .add("cp", cp.getText().toString())
+                .add(ApiConf.PARAM.apikey, ApiConf.API_KEY)
+                .add(ApiConf.PARAM.method, method)
+                .add(ApiConf.PARAM.titre, title.getText().toString())
+                .add(ApiConf.PARAM.description, description.getText().toString())
+                .add(ApiConf.PARAM.prix, price.getText().toString())
+                .add(ApiConf.PARAM.pseudo, sharedPrefs.getString(Profil.username, ""))
+                .add(ApiConf.PARAM.emailContact, sharedPrefs.getString(Profil.emailAddress, ""))
+                .add(ApiConf.PARAM.telContact, sharedPrefs.getString(Profil.phoneNumber, ""))
+                .add(ApiConf.PARAM.ville, ville.getText().toString())
+                .add(ApiConf.PARAM.cp, cp.getText().toString())
                 .build();
 
         Request request = new Request.Builder()
@@ -147,5 +135,15 @@ public class AnnonceCreatorActivity extends AbstractApiConnectedActivity {
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    protected void initView() {
+        btnEnvoi = (Button) findViewById(R.id.buttonEnvoi);
+        title = (EditText) findViewById(R.id.editTitle);
+        price = (EditText) findViewById(R.id.editPrix);
+        description = (EditText) findViewById(R.id.editDescription);
+        ville = (EditText) findViewById(R.id.editVille);
+        cp = (EditText) findViewById(R.id.editCP);
     }
 }

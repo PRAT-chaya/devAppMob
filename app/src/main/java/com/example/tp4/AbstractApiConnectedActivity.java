@@ -6,7 +6,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
+import com.example.tp4.adapter.ApiAnnonceAdapter;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -30,7 +32,27 @@ public abstract class AbstractApiConnectedActivity extends AbstractBaseActivity 
         return false;
     }
 
-    public void parseResponse(String response) {
+    protected void apiCallPOST(View view, String apiMethod) {
+        makeApiCall(ApiConf.API_URL, apiMethod);
+    }
+
+    protected void apiCallGET(View view, String apiMethod) {
+        makeApiCall(ApiConf.API_URL + "?" + "apikey=" + ApiConf.API_KEY + "&method=" + apiMethod, apiMethod);
+    }
+
+    protected void apiCallGET(View view, String apiMethod, String paramName, String paramVal) {
+        makeApiCall(
+                ApiConf.API_URL + "?" +
+                        "apikey=" + ApiConf.API_KEY +
+                        "&method=" + apiMethod +
+                        "&" + paramName + "=" + paramVal,
+                apiMethod
+        );
+    }
+
+    protected abstract void makeApiCall(String s, String method);
+
+    protected void parseResponse(String response) {
         // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
         Moshi moshi = new Moshi.Builder().add(new ApiAnnonceAdapter()).build();
         // créer l'adapteur pour Annonce

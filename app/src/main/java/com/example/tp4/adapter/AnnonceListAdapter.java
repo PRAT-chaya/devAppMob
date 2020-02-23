@@ -1,10 +1,13 @@
-package com.example.tp4;
+package com.example.tp4.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.tp4.Annonce;
+import com.example.tp4.R;
 
 import java.util.List;
 

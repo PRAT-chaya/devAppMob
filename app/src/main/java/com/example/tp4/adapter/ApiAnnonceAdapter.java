@@ -1,7 +1,8 @@
-package com.example.tp4;
+package com.example.tp4.adapter;
 
 import android.util.Log;
 
+import com.example.tp4.Annonce;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonReader;

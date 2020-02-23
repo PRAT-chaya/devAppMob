@@ -23,7 +23,17 @@ public final class ApiConf {
     }
 
     public static final class PARAM {
+        public final static String apikey = "apikey";
+        public final static String method = "method";
         public final static String id = "id";
+        public final static String titre = "titre";
+        public final static String description = "description";
+        public final static String prix = "prix";
         public final static String pseudo = "pseudo";
+        public final static String emailContact = "emailContact";
+        public final static String telContact = "telContact";
+        public final static String ville = "ville";
+        public final static String cp = "cp";
+        public final static String photo = "photo";
     }
 }
