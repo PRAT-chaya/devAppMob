@@ -17,20 +17,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import com.viewpagerindicator.CirclePageIndicator;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -39,10 +39,15 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class AnnonceViewActivity extends AppCompatActivity {
+public class AnnonceViewActivity extends AbstractBaseActivity {
     private TextView adTitleTextView, priceTextView, locationTextView, descTextView,
             dateTextView, contactTextView, emailTextView, phoneTextView;
-    private ImageView imageView;
+
+    private static ViewPager mPager;
+    private static int currentPage = 0;
+    private static int NUM_PAGES = 0;
+    private List<String> imageUrlList;
+
     private Annonce fedAnnonce;
     private boolean isEditable;
     private SharedPreferences sharedPrefs;
@@ -51,20 +56,17 @@ public class AnnonceViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.annonce_view);
-
         sharedPrefs = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-
-        Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolBar);
-        ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+        initToolbar();
 
         isEditable = false;
+        imageUrlList = new ArrayList();
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.containsKey("HELLO")) {
             fedAnnonce = (Annonce) bundle.getSerializable("HELLO");
-            if(fedAnnonce.getPseudo().equals(sharedPrefs.getString(Profil.username, ""))){
+            imageUrlList = fedAnnonce.getImages();
+            if (fedAnnonce.getPseudo().equals(sharedPrefs.getString(Profil.username, ""))) {
                 isEditable = true;
             }
         } else {
@@ -248,7 +250,6 @@ public class AnnonceViewActivity extends AppCompatActivity {
         contactTextView = findViewById(R.id.contactTextView);
         emailTextView = findViewById(R.id.emailTextView);
         phoneTextView = findViewById(R.id.phoneTextView);
-        imageView = findViewById(R.id.imageView);
     }
 
     private void fillView(Annonce annonce) {
@@ -262,13 +263,43 @@ public class AnnonceViewActivity extends AppCompatActivity {
         contactTextView.setText(getString(R.string.contact) + " " + annonce.getPseudo());
         emailTextView.setText(annonce.getEmailContact());
         phoneTextView.setText(annonce.getTelContact());
-        if (annonce.getImages().isEmpty()) {
-            Glide.with(this).load(R.drawable.placeholder).into(imageView);
-        } else {
-            Random r = new Random();
+
+
+        if(imageUrlList.isEmpty()) {
+            ImageView defaultImageView = findViewById(R.id.defaultImageView);
             Glide.with(this)
-                    .load(annonce.getImageUrl(r.nextInt(annonce.getImages().size())))
-                    .into(imageView);
+                    .load(R.drawable.placeholder)
+                    .into(defaultImageView);
+
+        } else {
+            mPager = (ViewPager) findViewById(R.id.pager);
+            mPager.setAdapter(new SlidingImageAdapter(this, imageUrlList));
+            CirclePageIndicator indicator = (CirclePageIndicator) findViewById(R.id.indicator);
+            indicator.setViewPager(mPager);
+            final float density = getResources().getDisplayMetrics().density;
+
+            //Set circle indicator radius
+            indicator.setRadius(5 * density);
+            NUM_PAGES = imageUrlList.size();
+
+            // Pager listener over indicator
+            indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+                @Override
+                public void onPageSelected(int position) {
+                    currentPage = position;
+                }
+
+                @Override
+                public void onPageScrolled(int pos, float arg1, int arg2) {
+
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int pos) {
+
+                }
+            });
         }
     }
 }

@@ -3,8 +3,6 @@ package com.example.tp4;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,13 +10,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -35,7 +29,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class AnnonceListViewActivity extends AppCompatActivity implements OnAnnonceListener {
+public class AnnonceListViewActivity extends AbstractApiConnectedActivity implements OnAnnonceListener {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private List<Annonce> itemsList;
@@ -54,10 +48,7 @@ public class AnnonceListViewActivity extends AppCompatActivity implements OnAnno
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolBar);
-        ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+        initToolbar();
 
         listByPseudo = false;
 
@@ -136,21 +127,6 @@ public class AnnonceListViewActivity extends AppCompatActivity implements OnAnno
                 return super.onOptionsItemSelected(item);
 
         }
-    }
-
-    protected boolean isConnected(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (activeNetwork != null && activeNetwork.isConnected()) {
-            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-                Snackbar.make(findViewById(R.id.recyclerView), "Connecté au Wifi", Snackbar.LENGTH_LONG).show();
-                return true;
-            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-                Snackbar.make(findViewById(R.id.recyclerView), "Connecté au data", Snackbar.LENGTH_LONG).show();
-                return true;
-            }
-        }
-        return false;
     }
 
     private static List<Annonce> makeMockList() {

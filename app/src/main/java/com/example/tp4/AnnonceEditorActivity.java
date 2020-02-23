@@ -5,21 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
@@ -41,7 +36,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class AnnonceEditorActivity extends AppCompatActivity {
+public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
 
     protected EditText title, price, description, ville, cp;
     protected Button addImageButton, btnEnvoi;
@@ -60,10 +55,7 @@ public class AnnonceEditorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_annonce_creator);
 
-        Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolBar);
-        ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+        initToolbar();
 
         btnEnvoi = (Button) findViewById(R.id.buttonEnvoi);
         title = (EditText) findViewById(R.id.editTitle);
@@ -111,6 +103,17 @@ public class AnnonceEditorActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return(super.onOptionsItemSelected(item));
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -133,21 +136,6 @@ public class AnnonceEditorActivity extends AppCompatActivity {
         ville.setText(fedAnnonce.getVille());
         cp.setText(fedAnnonce.getCp());
         description.setText(fedAnnonce.getDescription());
-    }
-
-    protected boolean isConnected(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (activeNetwork != null && activeNetwork.isConnected()) {
-            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-                Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Connecté au Wifi", Snackbar.LENGTH_SHORT).show();
-                return true;
-            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-                Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Connecté au data", Snackbar.LENGTH_SHORT).show();
-                return true;
-            }
-        }
-        return false;
     }
 
     protected Boolean isValid(){
@@ -258,25 +246,6 @@ public class AnnonceEditorActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         });
-    }
-
-    public void parseResponse(String response) {
-        // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
-        Moshi moshi = new Moshi.Builder().add(new ApiAnnonceAdapter()).build();
-        // créer l'adapteur pour Annonce
-        JsonAdapter<Annonce> jsonAdapter = moshi.adapter(Annonce.class);
-
-        try {
-            // response est la String qui contient le JSON de la réponse
-            Annonce annonce = jsonAdapter.fromJson(response);
-            Intent intent = new Intent(this, AnnonceViewActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("HELLO", annonce);
-            intent.putExtras(bundle);
-            startActivity(intent);
-        } catch (IOException e) {
-            Log.i("TP4", "Erreur I/O");
-        }
     }
 }
 

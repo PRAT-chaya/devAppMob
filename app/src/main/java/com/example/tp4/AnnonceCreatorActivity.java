@@ -3,18 +3,12 @@ package com.example.tp4;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
@@ -32,25 +26,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-
-public class AnnonceCreatorActivity extends AppCompatActivity {
+public class AnnonceCreatorActivity extends AbstractApiConnectedActivity {
 
     protected EditText title, price, description, ville, cp;
     protected MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -61,10 +37,8 @@ public class AnnonceCreatorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_annonce_creator);
 
-        Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolBar);
-        ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+        initToolbar();
+
         Button btnEnvoi = (Button) findViewById(R.id.buttonEnvoi);
         title = (EditText) findViewById(R.id.editTitle);
         price = (EditText) findViewById(R.id.editPrix);
@@ -124,21 +98,6 @@ public class AnnonceCreatorActivity extends AppCompatActivity {
 
     }
 
-    protected boolean isConnected(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (activeNetwork != null && activeNetwork.isConnected()) {
-            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-                Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Connecté au Wifi", Snackbar.LENGTH_LONG).show();
-                return true;
-            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-                Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Connecté au data", Snackbar.LENGTH_LONG).show();
-                return true;
-            }
-        }
-        return false;
-    }
-
     protected void apiCall(View view) {
         makeApiCall(ApiConf.API_URL);
     }
@@ -188,24 +147,5 @@ public class AnnonceCreatorActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         });
-    }
-
-    public void parseResponse(String response) {
-        // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
-        Moshi moshi = new Moshi.Builder().add(new ApiAnnonceAdapter()).build();
-        // créer l'adapteur pour Annonce
-        JsonAdapter<Annonce> jsonAdapter = moshi.adapter(Annonce.class);
-
-        try {
-            // response est la String qui contient le JSON de la réponse
-            Annonce annonce = jsonAdapter.fromJson(response);
-            Intent intent = new Intent(this, AnnonceViewActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("HELLO", annonce);
-            intent.putExtras(bundle);
-            startActivity(intent);
-        } catch (IOException e) {
-            Log.i("TP4", "Erreur I/O");
-        }
     }
 }
