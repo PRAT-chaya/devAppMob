@@ -2,11 +2,12 @@ package com.example.tp4;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.DialogFragment;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.ByteArrayOutputStream;
@@ -22,6 +26,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -34,7 +40,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
+public class AnnonceEditorActivity extends AbstractApiConnectedActivity implements ChoosePictureSourceDialog.ChoosePictureSourceDialogListener {
 
     protected EditText title, price, description, ville, cp;
     protected Button addImageButton, btnEnvoi;
@@ -42,8 +48,11 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
     protected ImageView targetImage;
 
     private Annonce fedAnnonce;
-    private Uri targetUri;
-    Bitmap bitmap;
+    protected Uri targetUri = null;;
+    protected Bitmap bitmap = null;
+
+    static final int REQUEST_TAKE_PHOTO = 1;
+    protected String currentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +61,6 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
 
         initToolbar();
         initView();
-
-        targetUri = null;
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.containsKey("HELLO")) {
@@ -64,16 +71,14 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
         addImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, 0);
+                showChoosePictureSourceDialog();
             }
         });
 
         btnEnvoi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!textHasChanged() && !imageIsLoaded()){
+                if (!textHasChanged() && !imageIsLoaded()) {
                     Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Vous n'avez rien modifié", Snackbar.LENGTH_LONG).show();
                 } else {
                     if (textHasChanged()) {
@@ -117,15 +122,49 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            targetUri = data.getData();
-            textTargetUri.setText(targetUri.getPath());
-            try {
-                bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
-                targetImage.setImageBitmap(bitmap);
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            if (requestCode == 0) {
+                targetUri = data.getData();
+                try {
+                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else if (requestCode == REQUEST_TAKE_PHOTO) {
+                if (data != null) {
+                    bitmap = (Bitmap) data.getExtras().get("data");
+                } else {
+                    try {
+                        bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
+
+            try {
+                File temp = File.createTempFile("temp", ".jpg");
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+                byte[] myByteArray = baos.toByteArray();
+
+                try (FileOutputStream fos = new FileOutputStream(temp)) {
+                    fos.write(myByteArray);
+                }
+                int newWidth = 600;
+                int newHeight = (int) Math.round(newWidth*0.75);
+                bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+            } catch (IOException e) {
+                Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur: impossible de créer temp", Snackbar.LENGTH_LONG).show();
+            }
+
+            if(targetUri != null) {
+                textTargetUri.setText(targetUri.getPath());
+            } else {
+                textTargetUri.setError("Erreur de chargement de l'image");
+            }
+
+            targetImage.setImageBitmap(bitmap);
         }
     }
 
@@ -222,7 +261,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
             String strVille = ville.getText().toString();
             String strCp = cp.getText().toString();
 
-            if(!strTitre.equals(fedAnnonce.getTitre())){
+            if (!strTitre.equals(fedAnnonce.getTitre())) {
                 builder.add(ApiConf.PARAM.titre, strTitre);
             }
             if (!strPrix.equals(fedAnnonce.getPrix())) {
@@ -235,7 +274,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
                 builder.add(ApiConf.PARAM.ville, ville.getText().toString());
             }
             if (!strCp.equals(fedAnnonce.getCp())) {
-                builder .add(ApiConf.PARAM.cp, cp.getText().toString());
+                builder.add(ApiConf.PARAM.cp, cp.getText().toString());
             }
 
             body = builder.build();
@@ -278,7 +317,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
                     .addHeader("Content-Type", "text/plain")
                     .build();
 
-            final boolean canParse = isLastRequest;
+            final boolean canStartView = isLastRequest;
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
@@ -292,8 +331,9 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if(canParse){
-                                        parseResponse(body);
+                                    if (canStartView) {
+                                        Annonce annonce = parseResponseAsAnnonce(body);
+                                        startActivityFromAnnonce(annonce);
                                     }
                                 }
                             });
@@ -312,7 +352,6 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
 
     }
 
-
     @Override
     protected void initView() {
         btnEnvoi = (Button) findViewById(R.id.buttonEnvoi);
@@ -325,6 +364,67 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity {
 
         textTargetUri = (TextView) findViewById(R.id.targeturi);
         targetImage = (ImageView) findViewById(R.id.targetimage);
+    }
+
+    protected void searchPhoneGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, 0);
+    }
+
+    protected void showChoosePictureSourceDialog() {
+        DialogFragment dialog = new ChoosePictureSourceDialog();
+        dialog.show(getSupportFragmentManager(), "choose_picture_dialog");
+    }
+
+    @Override
+    public void onDialogPhoneGalleryClick(DialogFragment dialog) {
+        searchPhoneGallery();
+    }
+
+    @Override
+    public void onDialogTakePictureClick(DialogFragment dialog) {
+        dispatchTakePictureIntent();
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    protected void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+                galleryAddPic();
+            } catch (IOException e) {
+                Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Erreur lors de la création du fichier", Snackbar.LENGTH_LONG).show();
+            }
+
+            if (photoFile != null) {
+                targetUri = FileProvider.getUriForFile(this,
+                        "com.example.tp4.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, targetUri);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
     }
 }
 

@@ -67,7 +67,9 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.containsKey("HELLO")) {
             fedAnnonce = (Annonce) bundle.getSerializable("HELLO");
-            imageUrlList = fedAnnonce.getImages();
+            if (fedAnnonce.getImages() != null) {
+                imageUrlList = fedAnnonce.getImages();
+            }
             if (fedAnnonce.getPseudo().equals(sharedPrefs.getString(Profil.username, ""))) {
                 isEditable = true;
             }

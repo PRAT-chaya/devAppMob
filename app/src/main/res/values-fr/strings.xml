@@ -22,5 +22,7 @@
     <string name="add_pic">Ajouter une photo</string>
     <string name="refresh_list">Rafraîchir la liste</string>
     <string name="edit_ad">Éditer l\'annonce</string>
-
+    <string name="choose_picture_source">Choisissez la source de la photo</string>
+    <string name="phone_gallery">Gallerie du téléphone</string>
+    <string name="take_picture">Prendre une photo</string>
 </resources>

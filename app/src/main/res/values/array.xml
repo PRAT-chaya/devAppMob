@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="picture_source">
+        <item>@string/phone_gallery</item>
+        <item>@string/take_picture</item>
+    </array>
+</resources>

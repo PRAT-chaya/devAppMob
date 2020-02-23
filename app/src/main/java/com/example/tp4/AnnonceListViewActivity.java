@@ -221,7 +221,7 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            parseResponse(body);
+                            parseResponseAsAnnonceList(body);
                         }
                     });
                 }
@@ -234,8 +234,7 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
         });
     }
 
-    @Override
-    public void parseResponse(String response) {
+    public void parseResponseAsAnnonceList(String response) {
         // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
         Moshi moshi = new Moshi.Builder().add(new ApiAnnonceListAdapter()).build();
         // créer l'adapteur pour Annonce

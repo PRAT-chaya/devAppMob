@@ -52,7 +52,7 @@ public abstract class AbstractApiConnectedActivity extends AbstractBaseActivity 
 
     protected abstract void makeApiCall(String s, String method);
 
-    protected void parseResponse(String response) {
+    protected Annonce parseResponseAsAnnonce(String response) {
         // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
         Moshi moshi = new Moshi.Builder().add(new ApiAnnonceAdapter()).build();
         // créer l'adapteur pour Annonce
@@ -60,14 +60,19 @@ public abstract class AbstractApiConnectedActivity extends AbstractBaseActivity 
 
         try {
             // response est la String qui contient le JSON de la réponse
-            Annonce annonce = jsonAdapter.fromJson(response);
-            Intent intent = new Intent(this, AnnonceViewActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("HELLO", annonce);
-            intent.putExtras(bundle);
-            startActivity(intent);
+            return jsonAdapter.fromJson(response);
+
         } catch (IOException e) {
             Log.i("TP4", "Erreur I/O");
         }
+        return null;
+    }
+
+    protected void startActivityFromAnnonce(Annonce annonce){
+        Intent intent = new Intent(this, AnnonceViewActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("HELLO", annonce);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }

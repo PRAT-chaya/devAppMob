@@ -22,4 +22,7 @@
     <string name="add_pic">Add a picture</string>
     <string name="refresh_list">Refresh list</string>
     <string name="edit_ad">Edit ad</string>
+    <string name="choose_picture_source">Choose picture source</string>
+    <string name="phone_gallery">Phone gallery</string>
+    <string name="take_picture">Take a picture</string>
 </resources>
