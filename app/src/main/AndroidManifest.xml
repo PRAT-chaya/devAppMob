@@ -36,6 +36,9 @@
         <activity
             android:name=".ProfilViewActivity"
             android:parentActivityName=".AnnonceListViewActivity" />
+        <activity
+            android:name=".LocalStorageAnnonceListViewActivity"
+            android:parentActivityName=".AnnonceListViewActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

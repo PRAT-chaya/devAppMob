@@ -7,7 +7,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,15 +19,14 @@ import androidx.fragment.app.DialogFragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
-import com.example.tp4.adapter.ApiAnnonceAdapter;
 import com.example.tp4.adapter.SlidingImageAdapter;
 import com.example.tp4.dialogs.DeleteAnnonceDialog;
 import com.example.tp4.model.Annonce;
 import com.example.tp4.model.ApiConf;
 import com.example.tp4.model.Profil;
+import com.example.tp4.model.db.AnnonceDbHelper;
+import com.example.tp4.model.db.AnnonceDbManager;
 import com.google.android.material.snackbar.Snackbar;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +43,6 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class AnnonceViewActivity extends AbstractApiConnectedActivity implements DeleteAnnonceDialog.DeleteAnnonceDialogListener {
     private TextView adTitleTextView, priceTextView, locationTextView, descTextView,
@@ -58,6 +55,7 @@ public class AnnonceViewActivity extends AbstractApiConnectedActivity implements
 
     private Annonce fedAnnonce;
     private boolean isEditable;
+    private boolean isLocal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,17 +67,24 @@ public class AnnonceViewActivity extends AbstractApiConnectedActivity implements
         initView();
 
         isEditable = false;
+        isLocal = false;
         imageUrlList = new ArrayList();
 
         Bundle bundle = getIntent().getExtras();
-        if (bundle != null && bundle.containsKey("HELLO")) {
-            fedAnnonce = (Annonce) bundle.getSerializable("HELLO");
-            assert fedAnnonce != null;
-            if (fedAnnonce.getImages() != null) {
-                imageUrlList = fedAnnonce.getImages();
+        if (bundle != null) {
+            if (bundle.containsKey("HELLO")) {
+                fedAnnonce = (Annonce) bundle.getSerializable("HELLO");
+                assert fedAnnonce != null;
+                if (fedAnnonce.getImages() != null) {
+                    imageUrlList = fedAnnonce.getImages();
+                }
+                if (fedAnnonce.getPseudo().equals(sharedPrefs.getString(Profil.username, ""))) {
+                    isEditable = true;
+                }
             }
-            if (fedAnnonce.getPseudo().equals(sharedPrefs.getString(Profil.username, ""))) {
-                isEditable = true;
+            if (bundle.containsKey(BundleKeys.IS_LOCAL)
+                    && bundle.getInt(BundleKeys.IS_LOCAL) == BundleVals.IS_LOCAL) {
+                isLocal = true;
             }
         }
 
@@ -108,8 +113,11 @@ public class AnnonceViewActivity extends AbstractApiConnectedActivity implements
         MenuInflater menuInflater = getMenuInflater();
         if (isEditable) {
             menuInflater.inflate(R.menu.editable_annonce_menu, menu);
+        } else if(isLocal) {
+            menuInflater.inflate(R.menu.local_annonce_menu, menu);
+
         } else {
-            menuInflater.inflate(R.menu.base_menu, menu);
+            menuInflater.inflate(R.menu.annonce_view_menu, menu);
         }
         return true;
     }
@@ -149,6 +157,23 @@ public class AnnonceViewActivity extends AbstractApiConnectedActivity implements
 
             case R.id.action_show_profil:
                 intent = new Intent(AnnonceViewActivity.this, ProfilViewActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_save_annonce_local:
+                if (fedAnnonce != null) {
+                    AnnonceDbManager dbManager = new AnnonceDbManager(new AnnonceDbHelper(this));
+                    long newRowId = dbManager.add(fedAnnonce);
+                    if (newRowId != -1) {
+                        Snackbar.make(findViewById(R.id.main), "Annonce enregistrée !", Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        Snackbar.make(findViewById(R.id.main), "Échec de l'enregistrement de l'annonce", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+                return true;
+
+            case R.id.action_show_my_local_annonces:
+                intent = new Intent(AnnonceViewActivity.this, LocalStorageAnnonceListViewActivity.class);
                 startActivity(intent);
                 return true;
 
@@ -246,7 +271,7 @@ public class AnnonceViewActivity extends AbstractApiConnectedActivity implements
     }
 
     @Override
-    protected void makeApiCall(String url, String method){
+    protected void makeApiCall(String url, String method) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
@@ -255,20 +280,20 @@ public class AnnonceViewActivity extends AbstractApiConnectedActivity implements
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    if (!response.isSuccessful()) {
-                        throw new IOException("Unexpected HTTP code" + response);
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected HTTP code" + response);
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(getApplicationContext(), AnnonceListViewActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(AnnonceListViewActivity.BundleKeys.FILTER_USERNAME, sharedPrefs.getString(Profil.username, ""));
+                        bundle.putInt(AnnonceListViewActivity.BundleKeys.DELETED_ANNONCE, 1);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
                     }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(getApplicationContext(), AnnonceListViewActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString(AnnonceListViewActivity.BundleKeys.FILTER_USERNAME, sharedPrefs.getString(Profil.username, ""));
-                            bundle.putInt(AnnonceListViewActivity.BundleKeys.DELETED_ANNONCE, 1);
-                            intent.putExtras(bundle);
-                            startActivity(intent);
-                        }
-                    });
+                });
             }
 
             @Override
@@ -297,7 +322,25 @@ public class AnnonceViewActivity extends AbstractApiConnectedActivity implements
 
     @Override
     public void onDialogDeleteClick(DialogFragment dialog) {
-        apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.delete,ApiConf.PARAM.id, fedAnnonce.getId());
+        if (fedAnnonce != null) {
+            if(isLocal){
+                AnnonceDbManager dbManager = new AnnonceDbManager(new AnnonceDbHelper(this));
+                if (dbManager.delete(fedAnnonce.getId()) > 0){
+                    Intent intent = new Intent(getApplicationContext(), LocalStorageAnnonceListViewActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(AnnonceListViewActivity.BundleKeys.DELETED_ANNONCE, 1);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                } else {
+                    Snackbar.make(findViewById(R.id.main), "Échec de la suppression de l'annonce", Snackbar.LENGTH_SHORT).show();
+
+                }
+            } else {
+                apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.delete, ApiConf.PARAM.id, fedAnnonce.getId());
+            }
+        } else {
+            Snackbar.make(findViewById(R.id.main), "Échec de la suppression de l'annonce", Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override

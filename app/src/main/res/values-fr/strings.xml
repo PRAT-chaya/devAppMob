@@ -19,6 +19,7 @@
     <string name="postcode">CP</string>
     <string name="all_ads">Toutes les annonces</string>
     <string name="my_ads">Mes annonces</string>
+    <string name="my_local_ads">Annonces sauvegardées en local</string>
     <string name="add_pic">Ajouter une photo</string>
     <string name="refresh_list">Rafraîchir la liste</string>
     <string name="edit_ad">Éditer l\'annonce</string>
@@ -31,4 +32,6 @@
     <string name="delete_ad_dialog_msg">Voulez-vous vraiment supprimer cette annonce ?</string>
     <string name="ad_deleted">Annonce supprimée</string>
     <string name="postcode_city">CP Ville</string>
+    <string name="save_ad_locally">Sauvegarder l\'annonce en local</string>
+
 </resources>

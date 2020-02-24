@@ -19,6 +19,7 @@
     <string name="postcode">Postcode</string>
     <string name="all_ads">All ads</string>
     <string name="my_ads">My ads</string>
+    <string name="my_local_ads">Locally saved ads</string>
     <string name="add_pic">Add a picture</string>
     <string name="refresh_list">Refresh list</string>
     <string name="edit_ad">Edit ad</string>
@@ -31,4 +32,5 @@
     <string name="delete_ad_dialog_msg">Do you really want to delete this ad ?</string>
     <string name="ad_deleted">Ad deleted</string>
     <string name="postcode_city">Postcode - City</string>
+    <string name="save_ad_locally">Save ad on local storage</string>
 </resources>

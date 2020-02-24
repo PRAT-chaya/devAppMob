@@ -22,7 +22,6 @@ public class ApiAnnonceListAdapter {
             String name = reader.nextName();
             if (name.equals("success")) {
                 boolean success = reader.nextBoolean();
-                Log.i("REQ", "Success vaut " + success);
                 if (!success) {
                     // @todo : récupérer le message d'erreur et le donner à l'exception
                     // @todo : créer une exception spécifique pour la distinguer des IOException

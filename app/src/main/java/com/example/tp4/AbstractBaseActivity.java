@@ -7,6 +7,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 public abstract class AbstractBaseActivity extends AppCompatActivity {
+
+    static final class BundleKeys {
+        static String DELETED_ANNONCE = "DELETED_ANNONCE";
+        static String FILTER_USERNAME = "FILTER_USERNAME";
+        static String IS_LOCAL = "IS_LOCAL";
+    }
+
+    static final class BundleVals {
+        static int DELETED_ANNONCE = 1;
+        static int IS_LOCAL = 1;
+    }
+
     protected SharedPreferences sharedPrefs;
 
     protected void initToolbar() {
