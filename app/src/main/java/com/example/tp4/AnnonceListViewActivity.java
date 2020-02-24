@@ -8,19 +8,28 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tp4.adapter.AnnonceListAdapter;
 import com.example.tp4.adapter.ApiAnnonceListAdapter;
 import com.example.tp4.adapter.OnAnnonceListener;
+import com.example.tp4.model.Annonce;
+import com.example.tp4.model.ApiConf;
+import com.example.tp4.model.Profil;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.Call;
@@ -33,17 +42,24 @@ import okhttp3.ResponseBody;
 public class AnnonceListViewActivity extends AbstractApiConnectedActivity implements OnAnnonceListener {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
+    private SwipeRefreshLayout swipeContainer;
+
     private List<Annonce> itemsList;
     private boolean listByPseudo;
     private String pseudoToFilter;
+
+    public static int DELETED_ANNONCE = 1;
+
+    static final class BundleKeys {
+        static String DELETED_ANNONCE = "DELETED_ANNONCE";
+        static String FILTER_USERNAME = "FILTER_USERNAME";
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.annonce_recycler_layout);
 
-        initToolbar();
-        initView();
 
         sharedPrefs = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
@@ -51,21 +67,41 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
 
         Bundle bundle = getIntent().getExtras();
 
+        if (bundle != null && bundle.containsKey(BundleKeys.FILTER_USERNAME)) {
+            initToolbar();
+        } else {
+            initToolbarWithoutUpButton();
+        }
+        initView();
+
         if (isConnected(this)) {
-            if (bundle != null && bundle.containsKey("PSEUDO_TO_FILTER")) {
-                pseudoToFilter = bundle.getString("PSEUDO_TO_FILTER");
-                if( pseudoToFilter != null && !pseudoToFilter.equals("")) {
-                    listByPseudo = true;
-                    apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listbyPseudo,
-                            ApiConf.PARAM.pseudo, pseudoToFilter);
+            if (bundle != null) {
+                if (bundle.containsKey(BundleKeys.DELETED_ANNONCE)
+                        && (bundle.getInt(BundleKeys.DELETED_ANNONCE) == DELETED_ANNONCE)) {
+                    Snackbar.make(findViewById(R.id.recyclerViewMain), R.string.ad_deleted, Snackbar.LENGTH_SHORT).show();
                 }
-                else {
+                if (bundle.containsKey(BundleKeys.FILTER_USERNAME)) {
+                    pseudoToFilter = bundle.getString(BundleKeys.FILTER_USERNAME);
+                    if (pseudoToFilter != null && !pseudoToFilter.equals("")) {
+                        listByPseudo = true;
+                        apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listbyPseudo,
+                                ApiConf.PARAM.pseudo, pseudoToFilter);
+                    } else {
+                        apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
+                    }
+                } else {
                     apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
                 }
             } else {
                 apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
             }
         }
+    }
+
+
+    protected void initToolbarWithoutUpButton() {
+        Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolBar);
     }
 
     @Override
@@ -78,32 +114,27 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_show_all_annonces:
+            case android.R.id.home:
                 Intent intent = new Intent(AnnonceListViewActivity.this, AnnonceListViewActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_show_all_annonces:
+                intent = new Intent(AnnonceListViewActivity.this, AnnonceListViewActivity.class);
                 startActivity(intent);
                 return true;
 
             case R.id.action_show_my_annonces:
                 intent = new Intent(this, AnnonceListViewActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString("PSEUDO_TO_FILTER", sharedPrefs.getString(Profil.username, ""));
+                bundle.putString(BundleKeys.FILTER_USERNAME, sharedPrefs.getString(Profil.username, ""));
                 intent.putExtras(bundle);
                 startActivity(intent);
                 return true;
 
-            case R.id.action_add_pic:
-                // User chose the "Settings" item, show the app settings UI...
-                return true;
-
             case R.id.action_refresh_list:
-                if (isConnected(this)) {
-                    if (listByPseudo) {
-                        apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listbyPseudo,
-                                ApiConf.PARAM.pseudo, pseudoToFilter);
-                    } else {
-                        apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
-                    }
-                }
+                swipeContainer.setRefreshing(true);
+                refreshView();
                 return true;
 
             case R.id.action_add_annonce:
@@ -197,9 +228,7 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
 
     private static List<String> makeStringList(String... uris) {
         List<String> stringList = new ArrayList();
-        for (String uri : uris) {
-            stringList.add(uri);
-        }
+        Collections.addAll(stringList, uris);
         return stringList;
     }
 
@@ -212,11 +241,12 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) {
                         throw new IOException("Unexpected HTTP code" + response);
                     }
+                    assert responseBody != null;
                     final String body = responseBody.string();
                     runOnUiThread(new Runnable() {
                         @Override
@@ -228,7 +258,7 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, IOException e) {
                 e.printStackTrace();
             }
         });
@@ -244,6 +274,7 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
         try {
             // response est la String qui contient le JSON de la réponse
             List<Annonce> wrapper = jsonAdapter.fromJson(response);
+            assert wrapper != null;
             if (!wrapper.isEmpty()) {
                 itemsList = wrapper;
                 fillRecyclerView(wrapper);
@@ -274,5 +305,25 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
     protected void initView() {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshView();
+            }
+        });
+    }
+
+    private void refreshView() {
+        if (isConnected(getApplicationContext())) {
+            if (listByPseudo) {
+                apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listbyPseudo,
+                        ApiConf.PARAM.pseudo, pseudoToFilter);
+            } else {
+                apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.listAll);
+            }
+        }
+        swipeContainer.setRefreshing(false);
     }
 }

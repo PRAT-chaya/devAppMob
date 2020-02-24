@@ -1,13 +1,13 @@
 package com.example.tp4;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.tp4.model.Profil;
 import com.google.android.material.snackbar.Snackbar;
 
 public class ProfilViewActivity extends AbstractBaseActivity {

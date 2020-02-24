@@ -1,6 +1,6 @@
-package com.example.tp4;
+package com.example.tp4.model;
 
-public abstract class Profil {
+public final class Profil {
     public static String username = "username";
     public static String phoneNumber = "phonenumber";
     public static String emailAddress = "email";

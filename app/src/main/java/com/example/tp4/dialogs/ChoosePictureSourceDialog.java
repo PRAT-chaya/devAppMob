@@ -1,4 +1,4 @@
-package com.example.tp4;
+package com.example.tp4.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,18 +8,23 @@ import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
 
+import com.example.tp4.R;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 import java.util.List;
 
 public class ChoosePictureSourceDialog extends DialogFragment {
 
     public interface ChoosePictureSourceDialogListener {
-        public void onDialogPhoneGalleryClick(DialogFragment dialog);
-        public void onDialogTakePictureClick(DialogFragment dialog);
+        void onDialogPhoneGalleryClick(DialogFragment dialog);
+        void onDialogTakePictureClick(DialogFragment dialog);
     }
 
-    ChoosePictureSourceDialogListener listener;
+    private ChoosePictureSourceDialogListener listener;
 
+    @NotNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -43,7 +48,7 @@ public class ChoosePictureSourceDialog extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
 
         try {

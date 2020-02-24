@@ -8,17 +8,17 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.tp4.Annonce;
+import com.example.tp4.model.Annonce;
 import com.example.tp4.R;
 
 public class AnnonceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private TextView titreTextView, prixTextView, locationTextView;
     private ImageView imageView;
-    OnAnnonceListener onAnnonceListener;
+    private OnAnnonceListener onAnnonceListener;
 
     // itemView est la vue correspondante à 1 item
-    public AnnonceViewHolder(View itemView, OnAnnonceListener onAnnonceListener) {
+    AnnonceViewHolder(View itemView, OnAnnonceListener onAnnonceListener) {
         super(itemView);
         //obtenir les éléments de la vue d'un item
         titreTextView = (TextView) itemView.findViewById(R.id.itemTitreTextView);
@@ -29,9 +29,9 @@ public class AnnonceViewHolder extends RecyclerView.ViewHolder implements View.O
         itemView.setOnClickListener(this);
     }
 
-    public void bind(Annonce annonce) {
+    void bind(Annonce annonce) {
         titreTextView.setText(annonce.getTitre());
-        prixTextView.setText(String.valueOf(annonce.getPrix() + "€"));
+        prixTextView.setText(annonce.getPrix() + "€");
         locationTextView.setText(annonce.getCp() + " " + annonce.getVille());
         Activity a = (Activity) itemView.getContext();
         int imageNbr = annonce.getImages().size();

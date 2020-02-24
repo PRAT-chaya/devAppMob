@@ -25,4 +25,10 @@
     <string name="choose_picture_source">Choisissez la source de la photo</string>
     <string name="phone_gallery">Gallerie du téléphone</string>
     <string name="take_picture">Prendre une photo</string>
+    <string name="delete_ad">Supprimer l\'annonce</string>
+    <string name="delete">Supprimer</string>
+    <string name="cancel">Annuler</string>
+    <string name="delete_ad_dialog_msg">Voulez-vous vraiment supprimer cette annonce ?</string>
+    <string name="ad_deleted">Annonce supprimée</string>
+    <string name="postcode_city">CP Ville</string>
 </resources>

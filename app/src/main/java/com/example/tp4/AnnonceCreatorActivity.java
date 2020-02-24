@@ -6,7 +6,12 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.example.tp4.model.Annonce;
+import com.example.tp4.model.ApiConf;
+import com.example.tp4.model.Profil;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -73,7 +78,7 @@ public class AnnonceCreatorActivity extends AnnonceEditorActivity {
         String strDesc = description.getText().toString();
         String strVille = ville.getText().toString();
         String strCp = cp.getText().toString();
-        Boolean hasError = false;
+        boolean hasError = false;
 
         if (TextUtils.isEmpty(strTitre)) {
             title.setError("Le titre ne peux être vide");
@@ -136,12 +141,13 @@ public class AnnonceCreatorActivity extends AnnonceEditorActivity {
 
             client.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     try (ResponseBody responseBody = response.body()) {
                         if (!response.isSuccessful()) {
                             Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Échec du POST, réponse négative", Snackbar.LENGTH_LONG).show();
                             throw new IOException("Unexpected HTTP code" + response);
                         } else {
+                            assert responseBody != null;
                             final String body = responseBody.string();
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -154,7 +160,7 @@ public class AnnonceCreatorActivity extends AnnonceEditorActivity {
                 }
 
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     e.printStackTrace();
                 }
             });
@@ -198,12 +204,13 @@ public class AnnonceCreatorActivity extends AnnonceEditorActivity {
 
             client.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     try (ResponseBody responseBody = response.body()) {
                         if (!response.isSuccessful()) {
                             Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Échec du POST, réponse négative", Snackbar.LENGTH_LONG).show();
                             throw new IOException("Unexpected HTTP code" + response);
                         } else {
+                            assert responseBody != null;
                             final String body = responseBody.string();
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -216,7 +223,7 @@ public class AnnonceCreatorActivity extends AnnonceEditorActivity {
                 }
 
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     e.printStackTrace();
                 }
             });

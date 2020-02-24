@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">L3devAppMob</string>
+    <string name="app_name" translatable="false">L3devAppMob</string>
     <string name="show_ad">Show ad</string>
     <string name="add_ad">Add ad</string>
     <string name="show_ads_list">Show ads list</string>
@@ -25,4 +25,10 @@
     <string name="choose_picture_source">Choose picture source</string>
     <string name="phone_gallery">Phone gallery</string>
     <string name="take_picture">Take a picture</string>
+    <string name="delete_ad">Delete ad</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_ad_dialog_msg">Do you really want to delete this ad ?</string>
+    <string name="ad_deleted">Ad deleted</string>
+    <string name="postcode_city">Postcode - City</string>
 </resources>

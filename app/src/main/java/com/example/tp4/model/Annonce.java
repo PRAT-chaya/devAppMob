@@ -1,22 +1,21 @@
-package com.example.tp4;
+package com.example.tp4.model;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Annonce implements Serializable {
-    protected String id;
-    protected String titre;
-    protected String description;
-    protected int prix;
-    protected String pseudo;
-    protected String emailContact;
-    protected String telContact;
-    protected String ville;
-    protected String cp;
-    protected List<String> images;
-    protected long date;
+    private String id;
+    private String titre;
+    private String description;
+    private int prix;
+    private String pseudo;
+    private String emailContact;
+    private String telContact;
+    private String ville;
+    private String cp;
+    private List<String> images;
+    private long date;
 
     public Annonce(String id, String titre, String description, int prix,
                    String pseudo, String emailContact, String telContact,

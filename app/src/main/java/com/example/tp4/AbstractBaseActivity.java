@@ -1,9 +1,6 @@
 package com.example.tp4;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +13,7 @@ public abstract class AbstractBaseActivity extends AppCompatActivity {
         Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolBar);
         ActionBar ab = getSupportActionBar();
+        assert ab != null;
         ab.setDisplayHomeAsUpEnabled(true);
     }
 

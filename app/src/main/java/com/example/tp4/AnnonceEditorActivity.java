@@ -19,7 +19,12 @@ import android.widget.TextView;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.tp4.dialogs.ChoosePictureSourceDialog;
+import com.example.tp4.model.Annonce;
+import com.example.tp4.model.ApiConf;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -48,7 +54,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity implemen
     protected ImageView targetImage;
 
     private Annonce fedAnnonce;
-    protected Uri targetUri = null;;
+    protected Uri targetUri = null;
     protected Bitmap bitmap = null;
 
     static final int REQUEST_TAKE_PHOTO = 1;
@@ -108,10 +114,9 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity implemen
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
 
         return (super.onOptionsItemSelected(item));
@@ -131,7 +136,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity implemen
                 }
             } else if (requestCode == REQUEST_TAKE_PHOTO) {
                 if (data != null) {
-                    bitmap = (Bitmap) data.getExtras().get("data");
+                    bitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
                 } else {
                     try {
                         bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
@@ -183,7 +188,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity implemen
         String strDesc = description.getText().toString();
         String strVille = ville.getText().toString();
         String strCp = cp.getText().toString();
-        Boolean hasError = false;
+        boolean hasError = false;
 
         if (TextUtils.isEmpty(strTitre)) {
             title.setError("Le titre ne peux être vide");
@@ -231,15 +236,11 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity implemen
         String strVille = ville.getText().toString();
         String strCp = cp.getText().toString();
 
-        if (!strTitre.equals(fedAnnonce.getTitre())
-                || !strPrix.equals(fedAnnonce.getPrix())
+        return !strTitre.equals(fedAnnonce.getTitre())
+                || !strPrix.equals(String.valueOf(fedAnnonce.getPrix()))
                 || !strDesc.equals(fedAnnonce.getDescription())
                 || !strVille.equals(fedAnnonce.getVille())
-                || !strCp.equals(fedAnnonce.getCp())
-        ) {
-            return true;
-        }
-        return false;
+                || !strCp.equals(fedAnnonce.getCp());
     }
 
     @Override
@@ -264,7 +265,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity implemen
             if (!strTitre.equals(fedAnnonce.getTitre())) {
                 builder.add(ApiConf.PARAM.titre, strTitre);
             }
-            if (!strPrix.equals(fedAnnonce.getPrix())) {
+            if (!strPrix.equals(String.valueOf(fedAnnonce.getPrix()))) {
                 builder.add(ApiConf.PARAM.prix, price.getText().toString());
             }
             if (!strDesc.equals(fedAnnonce.getDescription())) {
@@ -320,13 +321,14 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity implemen
             final boolean canStartView = isLastRequest;
             client.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     try (ResponseBody responseBody = response.body()) {
                         if (!response.isSuccessful()) {
                             Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Échec du POST, réponse négative", Snackbar.LENGTH_LONG).show();
                             throw new IOException("Unexpected HTTP code" + response);
                         } else {
                             Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Envoi réussi !", Snackbar.LENGTH_LONG).show();
+                            assert responseBody != null;
                             final String body = responseBody.string();
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -342,7 +344,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity implemen
                 }
 
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     e.printStackTrace();
                 }
             });

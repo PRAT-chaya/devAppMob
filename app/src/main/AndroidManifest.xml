@@ -17,7 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".AnnonceListViewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,9 +33,6 @@
         <activity
             android:name=".AnnonceViewActivity"
             android:parentActivityName=".AnnonceListViewActivity" />
-        <activity
-            android:name=".AnnonceListViewActivity"
-            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ProfilViewActivity"
             android:parentActivityName=".AnnonceListViewActivity" />

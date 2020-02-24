@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.tp4.adapter.ApiAnnonceAdapter;
+import com.example.tp4.model.Annonce;
+import com.example.tp4.model.ApiConf;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -18,6 +20,7 @@ import java.io.IOException;
 public abstract class AbstractApiConnectedActivity extends AbstractBaseActivity {
     protected boolean isConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert cm != null;
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null && activeNetwork.isConnected()) {
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -50,7 +53,7 @@ public abstract class AbstractApiConnectedActivity extends AbstractBaseActivity 
         );
     }
 
-    protected abstract void makeApiCall(String s, String method);
+    protected abstract void makeApiCall(String url, String method);
 
     protected Annonce parseResponseAsAnnonce(String response) {
         // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter

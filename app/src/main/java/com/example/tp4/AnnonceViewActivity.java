@@ -16,15 +16,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
+import androidx.fragment.app.DialogFragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.tp4.adapter.ApiAnnonceAdapter;
 import com.example.tp4.adapter.SlidingImageAdapter;
+import com.example.tp4.dialogs.DeleteAnnonceDialog;
+import com.example.tp4.model.Annonce;
+import com.example.tp4.model.ApiConf;
+import com.example.tp4.model.Profil;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.viewpagerindicator.CirclePageIndicator;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -40,7 +47,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class AnnonceViewActivity extends AbstractBaseActivity {
+public class AnnonceViewActivity extends AbstractApiConnectedActivity implements DeleteAnnonceDialog.DeleteAnnonceDialogListener {
     private TextView adTitleTextView, priceTextView, locationTextView, descTextView,
             dateTextView, contactTextView, emailTextView, phoneTextView;
 
@@ -67,22 +74,16 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.containsKey("HELLO")) {
             fedAnnonce = (Annonce) bundle.getSerializable("HELLO");
+            assert fedAnnonce != null;
             if (fedAnnonce.getImages() != null) {
                 imageUrlList = fedAnnonce.getImages();
             }
             if (fedAnnonce.getPseudo().equals(sharedPrefs.getString(Profil.username, ""))) {
                 isEditable = true;
             }
-        } else {
-            fedAnnonce = new MockAnnonce();
         }
 
-
         if (fedAnnonce != null) {
-            fillView(fedAnnonce);
-        } else if (isConnected(this)) {
-            apiCall(getCurrentFocus());
-        } else {
             fillView(fedAnnonce);
         }
 
@@ -129,16 +130,16 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
                 startActivity(intent);
                 return true;
 
+            case R.id.action_delete_annonce:
+                showDeleteAnnonceDialog();
+                return true;
+
             case R.id.action_show_my_annonces:
                 intent = new Intent(this, AnnonceListViewActivity.class);
                 bundle = new Bundle();
                 bundle.putString("PSEUDO_TO_FILTER", sharedPrefs.getString(Profil.username, ""));
                 intent.putExtras(bundle);
                 startActivity(intent);
-                return true;
-
-            case R.id.action_add_pic:
-                // User chose the "Settings" item, show the app settings UI...
                 return true;
 
             case R.id.action_add_annonce:
@@ -179,6 +180,7 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
 
     protected boolean isConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert cm != null;
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null && activeNetwork.isConnected()) {
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -190,58 +192,6 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
             }
         }
         return false;
-    }
-
-    protected void apiCall(View view) {
-        makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/completeAdWithImages.json");
-        //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/completeAd.json");
-        //makeApiCall("https://ensweb.users.info.unicaen.fr/android-api/mock-api/erreur.json");
-    }
-
-    private void makeApiCall(String url) {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        throw new IOException("Unexpected HTTP code" + response);
-                    }
-                    final String body = responseBody.string();
-                    Log.i("TP4", body);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            parseResponse(body);
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public void parseResponse(String response) {
-        // créer Moshi et lui ajouter l'adapteur ApiPersonneAdapter
-        Moshi moshi = new Moshi.Builder().add(new ApiAnnonceAdapter()).build();
-        // créer l'adapteur pour Annonce
-        JsonAdapter<Annonce> jsonAdapter = moshi.adapter(Annonce.class);
-
-        try {
-            // response est la String qui contient le JSON de la réponse
-            Annonce annonce = jsonAdapter.fromJson(response);
-            fillView(annonce);
-        } catch (IOException e) {
-            Log.i("TP4", "Erreur I/O");
-        }
     }
 
     private void fillView(Annonce annonce) {
@@ -257,7 +207,7 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
         phoneTextView.setText(annonce.getTelContact());
 
 
-        if(imageUrlList.isEmpty()) {
+        if (imageUrlList.isEmpty()) {
             ImageView defaultImageView = findViewById(R.id.defaultImageView);
             Glide.with(this)
                     .load(R.drawable.placeholder)
@@ -296,6 +246,39 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
     }
 
     @Override
+    protected void makeApiCall(String url, String method){
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Unexpected HTTP code" + response);
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(getApplicationContext(), AnnonceListViewActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString(AnnonceListViewActivity.BundleKeys.FILTER_USERNAME, sharedPrefs.getString(Profil.username, ""));
+                            bundle.putInt(AnnonceListViewActivity.BundleKeys.DELETED_ANNONCE, 1);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                        }
+                    });
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
     protected void initView() {
         adTitleTextView = findViewById(R.id.adTitleTextView);
         priceTextView = findViewById(R.id.priceTextView);
@@ -305,5 +288,20 @@ public class AnnonceViewActivity extends AbstractBaseActivity {
         contactTextView = findViewById(R.id.contactTextView);
         emailTextView = findViewById(R.id.emailTextView);
         phoneTextView = findViewById(R.id.phoneTextView);
+    }
+
+    protected void showDeleteAnnonceDialog() {
+        DialogFragment dialog = new DeleteAnnonceDialog();
+        dialog.show(getSupportFragmentManager(), "delete_annonce_dialog");
+    }
+
+    @Override
+    public void onDialogDeleteClick(DialogFragment dialog) {
+        apiCallGET(getCurrentFocus(), ApiConf.METHOD.GET.delete,ApiConf.PARAM.id, fedAnnonce.getId());
+    }
+
+    @Override
+    public void onDialogCancelClick(DialogFragment dialog) {
+
     }
 }

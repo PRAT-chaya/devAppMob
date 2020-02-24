@@ -1,7 +1,8 @@
 package com.example.tp4;
 
+import com.example.tp4.model.Annonce;
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class MockAnnonce extends Annonce {
     public MockAnnonce() {

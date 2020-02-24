@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    android:id="@+id/base_menu"
+
 
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
@@ -22,8 +22,4 @@
     <item android:id="@+id/action_show_my_annonces"
         android:title="@string/my_ads"
         app:showAsAction="never"/>
-    <item android:id="@+id/action_add_pic"
-        android:title="@string/add_pic"
-        app:showAsAction="never"/>
-
 </menu>

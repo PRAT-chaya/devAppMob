@@ -6,14 +6,16 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tp4.Annonce;
+import com.example.tp4.model.Annonce;
 import com.example.tp4.R;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class AnnonceListAdapter extends RecyclerView.Adapter<AnnonceViewHolder> {
 
-    List<Annonce> list;
+    private List<Annonce> list;
     private OnAnnonceListener onAnnonceListener;
 
     // donner la liste à l'adapteur
@@ -24,6 +26,7 @@ public class AnnonceListAdapter extends RecyclerView.Adapter<AnnonceViewHolder> 
 
     // créer les conteneurs de vue
     // et leur dire quel layout utiliser pour un item
+    @NotNull
     @Override
     public AnnonceViewHolder onCreateViewHolder(ViewGroup viewGroup, int itemType) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, viewGroup,false);
