@@ -33,5 +33,9 @@
     <string name="ad_deleted">Annonce supprimée</string>
     <string name="postcode_city">CP Ville</string>
     <string name="save_ad_locally">Sauvegarder l\'annonce en local</string>
-
+    <string name="no_connection">Pas de connexion</string>
+    <string name="connected_to_wifi">Connecté au wifi</string>
+    <string name="connected_to_data">Connecté au data</string>
+    <string name="ad_saved">Annonce enregistrée !</string>
+    <string name="ad_save_failure">Échec de l\'enregistrement de l\'annonce</string>
 </resources>

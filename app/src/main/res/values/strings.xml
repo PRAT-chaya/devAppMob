@@ -33,4 +33,9 @@
     <string name="ad_deleted">Ad deleted</string>
     <string name="postcode_city">Postcode - City</string>
     <string name="save_ad_locally">Save ad on local storage</string>
+    <string name="no_connection">No connection</string>
+    <string name="connected_to_wifi">Connected to wifi</string>
+    <string name="connected_to_data">Connected to data</string>
+    <string name="ad_saved">Ad saved !</string>
+    <string name="ad_save_failure">Ad save failure</string>
 </resources>

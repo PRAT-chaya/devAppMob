@@ -1,4 +1,4 @@
-package com.example.tp4;
+package com.example.devAppMob;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,11 +7,11 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
-import com.example.tp4.adapter.ApiAnnonceAdapter;
-import com.example.tp4.model.Annonce;
-import com.example.tp4.model.ApiConf;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.devAppMob.adapter.ApiAnnonceAdapter;
+import com.example.devAppMob.model.Annonce;
+import com.example.devAppMob.model.ApiConf;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
@@ -19,19 +19,22 @@ import java.io.IOException;
 
 public abstract class AbstractApiConnectedActivity extends AbstractBaseActivity {
     protected boolean isConnected(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
         assert cm != null;
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null && activeNetwork.isConnected()) {
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-                //Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Connecté au Wifi", Snackbar.LENGTH_LONG).show();
+                Toast toast = Toast.makeText(context, R.string.connected_to_wifi, Toast.LENGTH_SHORT);
+                toast.show();
                 return true;
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-                Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Connecté au data", Snackbar.LENGTH_LONG).show();
+                Toast toast = Toast.makeText(context, R.string.connected_to_data, Toast.LENGTH_SHORT);
+                toast.show();
                 return true;
             }
         }
-        Snackbar.make(findViewById(R.id.annonce_creator_main_layout), "Pas de connection", Snackbar.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(context, R.string.no_connection, Toast.LENGTH_SHORT);
+        toast.show();
         return false;
     }
 

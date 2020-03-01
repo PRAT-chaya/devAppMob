@@ -1,9 +1,7 @@
-package com.example.tp4;
+package com.example.devAppMob;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,12 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.tp4.adapter.AnnonceListAdapter;
-import com.example.tp4.adapter.ApiAnnonceListAdapter;
-import com.example.tp4.adapter.OnAnnonceListener;
-import com.example.tp4.model.Annonce;
-import com.example.tp4.model.ApiConf;
-import com.example.tp4.model.Profil;
+import com.example.devAppMob.adapter.AnnonceListAdapter;
+import com.example.devAppMob.adapter.ApiAnnonceListAdapter;
+import com.example.devAppMob.adapter.OnAnnonceListener;
+import com.example.devAppMob.model.Annonce;
+import com.example.devAppMob.model.ApiConf;
+import com.example.devAppMob.model.Profil;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -28,8 +26,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import okhttp3.Call;
@@ -53,7 +49,7 @@ public class AnnonceListViewActivity extends AbstractApiConnectedActivity implem
         super.onCreate(savedInstanceState);
         setContentView(R.layout.annonce_recycler_layout);
 
-        sharedPrefs = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        sharedPrefs = this.getSharedPreferences("MyPrefs", MODE_PRIVATE);
 
         listByPseudo = false;
 

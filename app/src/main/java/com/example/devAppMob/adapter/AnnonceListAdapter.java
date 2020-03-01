@@ -1,14 +1,13 @@
-package com.example.tp4.adapter;
+package com.example.devAppMob.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tp4.model.Annonce;
-import com.example.tp4.R;
+import com.example.devAppMob.model.Annonce;
+import com.example.devAppMob.R;
 
 import org.jetbrains.annotations.NotNull;
 

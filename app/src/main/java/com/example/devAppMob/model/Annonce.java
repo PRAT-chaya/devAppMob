@@ -1,4 +1,4 @@
-package com.example.tp4.model;
+package com.example.devAppMob.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.example.tp4.model;
+package com.example.devAppMob.model;
 
 public final class Profil {
     public static String username = "username";

@@ -1,4 +1,4 @@
-package com.example.tp4;
+package com.example.devAppMob;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -6,9 +6,9 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.example.tp4.model.Annonce;
-import com.example.tp4.model.ApiConf;
-import com.example.tp4.model.Profil;
+import com.example.devAppMob.model.ApiConf;
+import com.example.devAppMob.model.Annonce;
+import com.example.devAppMob.model.Profil;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;

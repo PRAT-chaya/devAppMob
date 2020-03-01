@@ -1,4 +1,4 @@
-package com.example.tp4;
+package com.example.devAppMob;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,12 +9,12 @@ import android.view.MenuInflater;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tp4.adapter.AnnonceListAdapter;
-import com.example.tp4.adapter.OnAnnonceListener;
-import com.example.tp4.model.Annonce;
-import com.example.tp4.model.db.AnnonceContract.AnnonceEntry;
-import com.example.tp4.model.db.AnnonceDbHelper;
-import com.example.tp4.model.db.AnnonceDbManager;
+import com.example.devAppMob.adapter.AnnonceListAdapter;
+import com.example.devAppMob.adapter.OnAnnonceListener;
+import com.example.devAppMob.model.Annonce;
+import com.example.devAppMob.model.db.AnnonceContract.AnnonceEntry;
+import com.example.devAppMob.model.db.AnnonceDbHelper;
+import com.example.devAppMob.model.db.AnnonceDbManager;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;

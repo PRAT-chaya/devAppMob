@@ -1,4 +1,4 @@
-package com.example.tp4;
+package com.example.devAppMob;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,9 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.tp4.model.Profil;
-import com.example.tp4.model.db.AnnonceDbHelper;
-import com.example.tp4.model.db.AnnonceDbManager;
+import com.example.devAppMob.model.Profil;
 import com.google.android.material.snackbar.Snackbar;
 
 public class ProfilViewActivity extends AbstractBaseActivity {

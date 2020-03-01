@@ -1,4 +1,4 @@
-package com.example.tp4;
+package com.example.devAppMob;
 
 import org.junit.Test;
 

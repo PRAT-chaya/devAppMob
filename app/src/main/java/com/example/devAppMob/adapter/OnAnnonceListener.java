@@ -1,4 +1,4 @@
-package com.example.tp4.adapter;
+package com.example.devAppMob.adapter;
 
 public interface OnAnnonceListener {
     void onAnnonceClick(int position);

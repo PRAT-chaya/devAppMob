@@ -1,10 +1,10 @@
-package com.example.tp4.model.db;
+package com.example.devAppMob.model.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.tp4.model.db.AnnonceContract.AnnonceEntry;
+import com.example.devAppMob.model.db.AnnonceContract.AnnonceEntry;
 
 public class AnnonceDbHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;

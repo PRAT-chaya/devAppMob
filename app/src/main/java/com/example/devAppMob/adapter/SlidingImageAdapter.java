@@ -1,4 +1,4 @@
-package com.example.tp4.adapter;
+package com.example.devAppMob.adapter;
 
 import androidx.viewpager.widget.PagerAdapter;
 
@@ -10,9 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.example.tp4.R;
+import com.example.devAppMob.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SlidingImageAdapter extends PagerAdapter {

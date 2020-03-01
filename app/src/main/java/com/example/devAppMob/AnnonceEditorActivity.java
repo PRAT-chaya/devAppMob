@@ -1,4 +1,4 @@
-package com.example.tp4;
+package com.example.devAppMob;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,9 +19,9 @@ import android.widget.TextView;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.tp4.dialogs.ChoosePictureSourceDialog;
-import com.example.tp4.model.Annonce;
-import com.example.tp4.model.ApiConf;
+import com.example.devAppMob.dialogs.ChoosePictureSourceDialog;
+import com.example.devAppMob.model.Annonce;
+import com.example.devAppMob.model.ApiConf;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;

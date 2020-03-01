@@ -1,18 +1,17 @@
-package com.example.tp4.adapter;
+package com.example.devAppMob.adapter;
 
-import android.util.Log;
-
-import com.example.tp4.model.Annonce;
+import com.example.devAppMob.model.Annonce;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonReader;
 
 import java.io.IOException;
+import java.util.List;
 
-public class ApiAnnonceAdapter {
+public class ApiAnnonceListAdapter {
     @FromJson
-    Annonce fromJson(JsonReader reader, JsonAdapter<Annonce> delegate) throws IOException {
-        Annonce result = null;
+    List<Annonce> fromJson(JsonReader reader, JsonAdapter<List<Annonce>> delegate) throws IOException {
+        List<Annonce> result = null;
 
         // démarrer le parsing du Json
         reader.beginObject();
@@ -39,3 +38,4 @@ public class ApiAnnonceAdapter {
         return result;
     }
 }
+

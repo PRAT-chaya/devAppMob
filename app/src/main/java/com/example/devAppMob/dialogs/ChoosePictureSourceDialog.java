@@ -1,4 +1,4 @@
-package com.example.tp4.dialogs;
+package com.example.devAppMob.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,7 +8,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
 
-import com.example.tp4.R;
+import com.example.devAppMob.R;
 
 import org.jetbrains.annotations.NotNull;
 

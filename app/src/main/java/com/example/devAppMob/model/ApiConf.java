@@ -1,4 +1,4 @@
-package com.example.tp4.model;
+package com.example.devAppMob.model;
 
 public final class ApiConf {
     public final static String API_URL = "https://ensweb.users.info.unicaen.fr/android-api/";

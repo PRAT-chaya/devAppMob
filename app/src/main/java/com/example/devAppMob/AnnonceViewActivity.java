@@ -1,4 +1,4 @@
-package com.example.tp4;
+package com.example.devAppMob;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,13 +19,13 @@ import androidx.fragment.app.DialogFragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
-import com.example.tp4.adapter.SlidingImageAdapter;
-import com.example.tp4.dialogs.DeleteAnnonceDialog;
-import com.example.tp4.model.Annonce;
-import com.example.tp4.model.ApiConf;
-import com.example.tp4.model.Profil;
-import com.example.tp4.model.db.AnnonceDbHelper;
-import com.example.tp4.model.db.AnnonceDbManager;
+import com.example.devAppMob.adapter.SlidingImageAdapter;
+import com.example.devAppMob.dialogs.DeleteAnnonceDialog;
+import com.example.devAppMob.model.ApiConf;
+import com.example.devAppMob.model.Profil;
+import com.example.devAppMob.model.db.AnnonceDbHelper;
+import com.example.devAppMob.model.db.AnnonceDbManager;
+import com.example.devAppMob.model.Annonce;
 import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -165,9 +165,9 @@ public class AnnonceViewActivity extends AbstractApiConnectedActivity implements
                     AnnonceDbManager dbManager = new AnnonceDbManager(new AnnonceDbHelper(this));
                     long newRowId = dbManager.add(fedAnnonce);
                     if (newRowId != -1) {
-                        Snackbar.make(findViewById(R.id.main), "Annonce enregistrée !", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.main), R.string.ad_saved, Snackbar.LENGTH_SHORT).show();
                     } else {
-                        Snackbar.make(findViewById(R.id.main), "Échec de l'enregistrement de l'annonce", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.main), R.string.ad_save_failure, Snackbar.LENGTH_SHORT).show();
                     }
                 }
                 return true;

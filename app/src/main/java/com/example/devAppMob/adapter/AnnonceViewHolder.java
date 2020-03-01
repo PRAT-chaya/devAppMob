@@ -1,7 +1,6 @@
-package com.example.tp4.adapter;
+package com.example.devAppMob.adapter;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,8 +8,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.tp4.model.Annonce;
-import com.example.tp4.R;
+import com.example.devAppMob.model.Annonce;
+import com.example.devAppMob.R;
 
 public class AnnonceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 

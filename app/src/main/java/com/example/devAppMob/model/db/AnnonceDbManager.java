@@ -1,4 +1,4 @@
-package com.example.tp4.model.db;
+package com.example.devAppMob.model.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -6,8 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
-import com.example.tp4.model.Annonce;
-import com.example.tp4.model.db.AnnonceContract.AnnonceEntry;
+import com.example.devAppMob.model.Annonce;
+import com.example.devAppMob.model.db.AnnonceContract.AnnonceEntry;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;

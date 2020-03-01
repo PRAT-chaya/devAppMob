@@ -1,4 +1,4 @@
-package com.example.tp4.model.db;
+package com.example.devAppMob.model.db;
 
 import android.provider.BaseColumns;
 
