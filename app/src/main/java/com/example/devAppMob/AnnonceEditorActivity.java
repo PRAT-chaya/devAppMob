@@ -413,7 +413,7 @@ public class AnnonceEditorActivity extends AbstractApiConnectedActivity implemen
 
             if (photoFile != null) {
                 targetUri = FileProvider.getUriForFile(this,
-                        "com.example.tp4.fileprovider",
+                        "com.example.devAppMob.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, targetUri);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
